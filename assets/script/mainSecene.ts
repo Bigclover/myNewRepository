@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('mainSecene')
 export class mainSecene extends Component {
     start() {
-        //test
+       
     }
 
     update(deltaTime: number) {
@@ -26,6 +26,7 @@ export class mainSecene extends Component {
         //git reset回退版本 git log 查看历史提交记录
         //分支相关 git branch 列出你在本地的分支，git branch branchName 创建一个分支 ，git checkout 分支切换,
         //git merge branchName 将指定分支合并到当前分支 git branch -d branchName 删除分支
+        //版本回退 进入相应分支 根据git log --oneline --graph 显示的每次提交的ID，用git reset --hard ID 回退到对应的提交状态
     }
 }
 
