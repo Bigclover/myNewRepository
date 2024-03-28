@@ -4,7 +4,7 @@ const { ccclass, property } = _decorator;
 @ccclass('mainSecene')
 export class mainSecene extends Component {
     start() {
-
+        //test
     }
 
     update(deltaTime: number) {
