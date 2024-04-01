@@ -19,9 +19,7 @@ export class hero extends creature {
         super.start();
         this.scheduleOnce(()=>{
             this.setDeckByDeckData();
-            this.setCreatureHp(-30);
-        },2)
-
+        },1)
     }
 
     setDeckByDeckData(){
@@ -44,7 +42,8 @@ export class hero extends creature {
      }
 
     update(deltaTime: number) {
-        
+        // super.update(deltaTime);
+
     }
 }
 

@@ -1,5 +1,6 @@
 import { _decorator, Component, EventTouch, Label, Node, Rect, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { deckObj } from './deckData';
+import { ListenerManager } from '../event/ListenerManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
@@ -21,6 +22,7 @@ export class card extends Component {
     cardDesc:string = '';
     private bondRect:Rect = null;
     private _startPosition:Vec3=null;
+    private releaseRect:Rect = null;
 
     protected onEnable(): void {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
@@ -49,12 +51,23 @@ export class card extends Component {
         this.tagLabel.string = this.cardTag;
         this.numLabel.string = this.cardNum.toString();
 
-        let _rect:Node|null = this.node.parent.parent.getChildByName('moveContrlRect')
+        //可移动区
+        let _rect:Node = this.node.parent.parent.getChildByName('moveContrlRect')
         if (_rect) {
             this.bondRect = _rect.getComponent(UITransform).getBoundingBoxToWorld()
         }
+        //卡牌释放区
+        let _rect1:Node = this.node.parent.parent.getChildByName('releaseRect')
+        if (_rect1) {
+            this.releaseRect = _rect1.getComponent(UITransform).getBoundingBoxToWorld()
+        }
         
         
+    }
+
+    sendHitMessageToMonster(){
+        // console.log('sendHitMessageToMonster=')
+        ListenerManager.dispatch('hitMonster',0,-this.cardNum);
     }
 
     setStartPosition(){
@@ -75,7 +88,13 @@ export class card extends Component {
     }
 
     onTouchEnd(event:EventTouch){
-        this.backToStartPosition();
+        const endlocation = event.getUILocation(); 
+        let isContain:boolean = this.releaseRect.contains(endlocation);
+        if (isContain) {
+            this.sendHitMessageToMonster();
+        }else{
+            this.backToStartPosition();
+        }
     }
 
     backToStartPosition(){
