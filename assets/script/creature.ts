@@ -11,8 +11,8 @@ export class creature extends Component {
     @property(Label)
     hpLabel:Label = null;
 
-    protected crMaxHp:number=200;
-    protected crCurHp:number=200;
+    protected crMaxHp:number=50;
+    protected crCurHp:number=50;
     protected _crCurDef:number=0;
     protected _hpChangeArr:number[]=[];
     protected _hpIsChanging:boolean = false;

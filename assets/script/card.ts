@@ -1,6 +1,6 @@
-import { _decorator, Component, EventTouch, Label, Node, Rect, tween, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { deckObj } from './deckData';
-import { ListenerManager } from '../event/ListenerManager';
+import { hero } from './hero';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
@@ -23,6 +23,9 @@ export class card extends Component {
     private bondRect:Rect = null;
     private _startPosition:Vec3=null;
     private releaseRect:Rect = null;
+    private _heroCom:hero = null;
+    private _startSibling:number = 0;
+    private _isCanTouch:boolean = true;
 
     protected onEnable(): void {
         this.node.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
@@ -38,12 +41,13 @@ export class card extends Component {
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
     }
 
-    init(id:number,deckObj:deckObj){
+    init(id:number,deckObj:deckObj,mc:hero){
         this.cardID = id;
         this.cardName = deckObj.cardName;
         this.cardTag = deckObj.baseEffect[0].tag;
         this.cardNum = deckObj.baseEffect[0].num; 
         this.cardDesc = deckObj.descr;
+        this._heroCom = mc;
     }
 
     start() {
@@ -61,25 +65,30 @@ export class card extends Component {
         if (_rect1) {
             this.releaseRect = _rect1.getComponent(UITransform).getBoundingBoxToWorld()
         }
-        
-        
     }
 
-    sendHitMessageToMonster(){
-        // console.log('sendHitMessageToMonster=')
-        ListenerManager.dispatch('hitMonster',0,-this.cardNum);
+    sendSelfToHero(){
+        this._heroCom.receiveCard(this);
     }
 
     setStartPosition(){
         this._startPosition = this.node.getPosition()
+        this._startSibling = this.node.getSiblingIndex();
     }
 
     onTouchBegin(event:EventTouch){
-        
-
+        if (!this._isCanTouch) {
+            return;
+        }
+        let _sIndex:number = this.node.parent.children.length;
+        this.node.parent.getComponent(Layout).enabled = false;
+        this.node.setSiblingIndex(_sIndex);
     }
 
     onTouchMove(event:EventTouch){
+        if (!this._isCanTouch) {
+            return;
+        }
         const location = event.getUILocation(); 
         let isContain:boolean = this.bondRect.contains(location);
         if (isContain) {
@@ -88,10 +97,11 @@ export class card extends Component {
     }
 
     onTouchEnd(event:EventTouch){
+        this._isCanTouch = false;
         const endlocation = event.getUILocation(); 
         let isContain:boolean = this.releaseRect.contains(endlocation);
         if (isContain) {
-            this.sendHitMessageToMonster();
+            this.sendSelfToHero();
         }else{
             this.backToStartPosition();
         }
@@ -101,7 +111,8 @@ export class card extends Component {
         tween(this.node)
         .to(0.2,{position:this._startPosition},{ easing: 'quartIn'})
         .call(()=>{
-
+            this.node.setSiblingIndex(this._startSibling);
+            this._isCanTouch = true;
         })
         .start()
     }
