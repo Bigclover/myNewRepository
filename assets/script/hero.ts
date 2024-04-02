@@ -25,11 +25,6 @@ export class hero extends creature {
         },1)
     }
 
-    initAllCardsArray(){
-        let dobArry:deckObj[]= deckData.instance.getDeckData();
-        
-    }
-
     setDeckByDeckData(){
         let dobArry:deckObj[]= deckData.instance.getDeckData();
         for (let i = 0; i < dobArry.length; i++) {
