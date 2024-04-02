@@ -1,10 +1,16 @@
-import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, tween, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, Sprite, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { deckObj } from './deckData';
 import { hero } from './hero';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
 export class card extends Component {
+    @property(Sprite)
+    bgSprite:Sprite = null;
+
+    @property(Sprite)
+    imgSprite:Sprite = null;
+
     @property(Label)
     nameLabel:Label = null;
 
@@ -50,6 +56,10 @@ export class card extends Component {
         this._heroCom = mc;
     }
 
+    protected onLoad(): void {
+        this.setCardFace(false);
+    }
+
     start() {
         this.nameLabel.string = this.cardName;
         this.tagLabel.string = this.cardTag;
@@ -65,6 +75,14 @@ export class card extends Component {
         if (_rect1) {
             this.releaseRect = _rect1.getComponent(UITransform).getBoundingBoxToWorld()
         }
+    }
+
+    setCardFace(isShow:boolean){
+        this.nameLabel.node.active = isShow;
+        this.tagLabel.node.active = isShow;
+        this.numLabel.node.active = isShow;
+        this.imgSprite.node.active = isShow;
+        this.bgSprite.node.active = !isShow;
     }
 
     sendSelfToHero(){
@@ -115,6 +133,33 @@ export class card extends Component {
             this._isCanTouch = true;
         })
         .start()
+    }
+
+    showFaceAnim(){
+        return new Promise<void>((resolve)=>{
+            tween(this.node)
+            .to(0.2,{scale:new Vec3(0,1,1)})
+            .call(()=>{
+                //当有卡背卡面之分时 这时也要设置卡面sprite显示
+                this.setCardFace(true);
+            })
+            .to(0.2,{scale:new Vec3(1,1,1)})
+            .call(()=>{
+                resolve();
+            })
+            .start();
+        })
+    }
+
+    moveToHandAnim(){
+        return new Promise<void>((resolve)=>{
+            tween(this.node)
+            .by(0.2,{position:new Vec3(450,0,0)})
+            .call(()=>{
+                resolve();
+            })
+            .start();
+        })
     }
 
     update(deltaTime: number) {

@@ -11,6 +11,9 @@ export class hero extends creature {
     @property({type:Prefab})
     cardPrefab:Prefab = null;
 
+    @property(Node)
+    allDeckNode:Node= null;
+
     @property(Layout)
     cardLayout:Layout = null;
 
@@ -20,18 +23,41 @@ export class hero extends creature {
 
     start() {
         super.start();
-        this.scheduleOnce(()=>{
-            this.setDeckByDeckData();
-        },1)
+        this.setDeckByDeckData();
+
+        this.schedule(()=>{
+            this.getTopOneCardToHand();
+        },0.4,3,1)
     }
+
+
 
     setDeckByDeckData(){
         let dobArry:deckObj[]= deckData.instance.getDeckData();
         for (let i = 0; i < dobArry.length; i++) {
-             this.addCardToDeckLayer(i,dobArry[i]);
+             this.addToAllCardsArray(i,dobArry[i]);
         }
-        this.refreshCardsArrangement();
      }
+
+     addToAllCardsArray(id:number,_dob:deckObj){
+        let cardIns = instantiate(this.cardPrefab);
+        let cardCom:card = cardIns.getComponent(card);
+        cardCom.init(id,_dob,this);
+        this._allCardsArray.push(cardCom);
+        this.allDeckNode.addChild(cardIns);
+    }
+
+    async getTopOneCardToHand(){
+        let topCard:card = this._allCardsArray.pop();
+        await topCard.showFaceAnim();
+        await topCard.moveToHandAnim();
+
+        topCard.node.removeFromParent();
+        this.cardLayout.node.addChild(topCard.node);
+        this._handCardsArray.push(topCard);
+
+        this.refreshCardsArrangement();
+    }
 
      refreshCardsArrangement(){
         this.cardLayout.enabled = true;
@@ -39,14 +65,6 @@ export class hero extends creature {
         this._handCardsArray.forEach((cardCom)=>{
              cardCom.setStartPosition();
         })
-     }
- 
-     addCardToDeckLayer(id:number,_dob:deckObj){
-         let cardIns = instantiate(this.cardPrefab);
-         let cardCom:card = cardIns.getComponent(card);
-         cardCom.init(id,_dob,this);
-         this.cardLayout.node.addChild(cardIns);
-         this._handCardsArray.push(cardCom);
      }
 
     receiveCard(card:card){
