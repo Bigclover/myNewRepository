@@ -1,4 +1,4 @@
-import { _decorator, Node } from 'cc';
+import { _decorator} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 

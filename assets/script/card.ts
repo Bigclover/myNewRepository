@@ -1,6 +1,6 @@
-import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, Sprite, tween, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, resources, Sprite, SpriteFrame, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { deckObj } from './deckData';
-import { hero } from './hero';
+import { deckConteroler } from './deckConteroler';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
@@ -15,21 +15,21 @@ export class card extends Component {
     nameLabel:Label = null;
 
     @property(Label)
-    tagLabel:Label = null;
-
-    @property(Label)
     numLabel:Label = null;
+
+    @property(Sprite)
+    typeSprite:Sprite = null;
 
 
     cardID:number = 0;
     cardName:string = '';
-    cardTag:string = '';
+    cardType:number = 0;
     cardNum:number = 0; 
     cardDesc:string = '';
     private bondRect:Rect = null;
     private _startPosition:Vec3=null;
     private releaseRect:Rect = null;
-    private _heroCom:hero = null;
+    private _deckControler:deckConteroler = null;
     private _startSibling:number = 0;
     private _isCanTouch:boolean = true;
 
@@ -47,13 +47,13 @@ export class card extends Component {
         this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
     }
 
-    init(id:number,deckObj:deckObj,mc:hero){
+    init(id:number,deckObj:deckObj,mc:deckConteroler){
         this.cardID = id;
         this.cardName = deckObj.cardName;
-        this.cardTag = deckObj.baseEffect[0].tag;
+        this.cardType = deckObj.baseEffect[0].type;
         this.cardNum = deckObj.baseEffect[0].num; 
         this.cardDesc = deckObj.descr;
-        this._heroCom = mc;
+        this._deckControler = mc;
     }
 
     protected onLoad(): void {
@@ -62,8 +62,13 @@ export class card extends Component {
 
     start() {
         this.nameLabel.string = this.cardName;
-        this.tagLabel.string = this.cardTag;
         this.numLabel.string = this.cardNum.toString();
+        let typePatch:string = this.getImgPatchByType(this.cardType);
+        resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
+            this.typeSprite.spriteFrame = spriteFrame;
+            this.typeSprite.spriteFrame.addRef();
+        });
+        
 
         //可移动区
         let _rect:Node = this.node.parent.parent.getChildByName('moveContrlRect')
@@ -77,16 +82,36 @@ export class card extends Component {
         }
     }
 
+    getImgPatchByType(type:number):string{
+        let _patch:string = '';
+        switch (type) {
+            case 0:
+                _patch = 'atk';
+                break;
+            case 1:
+                _patch = 'def';
+                break;
+            case 2:
+                _patch = 'life';
+                break;
+            default:
+                _patch = 'atk';
+                break;
+        }
+        _patch = `img/cardType/${_patch}/spriteFrame`;
+        return _patch;
+    }
+
     setCardFace(isShow:boolean){
         this.nameLabel.node.active = isShow;
-        this.tagLabel.node.active = isShow;
+        this.typeSprite.node.active = isShow;
         this.numLabel.node.active = isShow;
         this.imgSprite.node.active = isShow;
         this.bgSprite.node.active = !isShow;
     }
 
     sendSelfToHero(){
-        this._heroCom.receiveCard(this);
+        this._deckControler.receiveCard(this);
     }
 
     setStartPosition(){
@@ -169,7 +194,7 @@ export class card extends Component {
     moveToDiscardPile(){
         return new Promise<void>((resolve)=>{
             //不同2dUI 坐标系之间的转换
-            let enPosi:Vec3 = this._heroCom.discardNode.worldPosition;
+            let enPosi:Vec3 = this._deckControler.discardNode.worldPosition;
             let locPosi:Vec3 = this.node.parent.getComponent(UITransform).convertToNodeSpaceAR(enPosi);
             tween(this.node)
             .parallel(
@@ -185,6 +210,11 @@ export class card extends Component {
 
     update(deltaTime: number) {
         
+    }
+
+    protected onDestroy(): void {
+        this.typeSprite.spriteFrame.decRef();
+        this.typeSprite.spriteFrame=null;
     }
 }
 

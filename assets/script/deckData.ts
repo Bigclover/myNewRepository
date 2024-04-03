@@ -3,7 +3,7 @@
 // @ccclass('deckData')
 
 interface effectObj{
-    tag:string,
+    type:number,//0:攻击 1:护甲
     num:number
 }
 
@@ -23,11 +23,11 @@ export default class deckData{
     }
 
     private _curDeckData:deckObj[]=
-    [{cardName:'剑击',baseEffect:[{tag:'攻击',num:10}],descr:''},
-    {cardName:'剑击',baseEffect:[{tag:'攻击',num:10}],descr:''},
-    {cardName:'重击',baseEffect:[{tag:'攻击',num:20}],descr:''},
-    {cardName:'格挡',baseEffect:[{tag:'防御',num:10}],descr:''},
-    {cardName:'格挡',baseEffect:[{tag:'防御',num:10}],descr:''},              
+    [{cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
+    {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
+    {cardName:'重击',baseEffect:[{type:0,num:20}],descr:''},
+    {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
+    {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},              
     ];
 
     public getDeckData():deckObj[]{

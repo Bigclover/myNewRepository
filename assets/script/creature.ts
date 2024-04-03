@@ -3,13 +3,18 @@ import { _decorator, Component, Label, Node, ProgressBar, tween } from 'cc';
 
 const { ccclass, property } = _decorator;
 
-const barLenght:number = 346;
+// const barLenght:number = 346;
+const hpAnimSpeed:number = 40;//血条变化速度
 @ccclass('creature')
 export class creature extends Component {
     @property({type:ProgressBar})
     HpBar:ProgressBar = null;
+
     @property(Label)
     hpLabel:Label = null;
+
+    @property(Node)
+    defNode:Node= null;
 
     protected crMaxHp:number=50;
     protected crCurHp:number=50;
@@ -17,10 +22,20 @@ export class creature extends Component {
     protected _hpChangeArr:number[]=[];
     protected _hpIsChanging:boolean = false;
 
-    
-
     start() {
         this.hpLabel.string = this.crCurHp.toString();
+    }
+
+    setSelfDef(defNum:number){
+        this._crCurDef += defNum;
+        if (this._crCurDef>0) {
+            this.defNode.active = true;
+            let _label = this.defNode.getChildByName('num').getComponent(Label);
+            _label.string = this._crCurDef.toString();
+        }else{
+            this._crCurDef = 0;
+            this.defNode.active = false;
+        }
     }
     
     beenHit(hitNum:number):void{
@@ -43,8 +58,7 @@ export class creature extends Component {
         }
         this.hpLabel.string = this.crCurHp.toString();
 
-        let speed:number = 150;
-        let cTime:number = (Math.abs(change) / speed);
+        let cTime:number = (Math.abs(change) / hpAnimSpeed);
         tween(this.HpBar)
         .to(cTime,{progress:curRate})
         .call(()=>{
