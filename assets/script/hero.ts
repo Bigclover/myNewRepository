@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Layout, Node, Prefab } from 'cc';
+import { _decorator, Component, instantiate, Label, Layout, Node, Prefab } from 'cc';
 import { card } from './card';
 import  deckData, { deckObj }  from './deckData';
 import { creature } from './creature';
@@ -16,6 +16,9 @@ export class hero extends creature {
 
     @property(Layout)
     cardLayout:Layout = null;
+
+    @property(Node)
+    discardNode:Node= null;
 
     private _allCardsArray:card[]=[];
     private _handCardsArray:card[]=[];
@@ -67,9 +70,12 @@ export class hero extends creature {
         })
      }
 
-    receiveCard(card:card){
+    async receiveCard(card:card){
+        await card.moveToDiscardPile();
         card.node.removeFromParent()
         this._discardArray.push(card);
+        let counterLabel:Label = this.discardNode.getChildByName('counter').getComponent(Label);
+        counterLabel.string = this._discardArray.length.toString();
         this.sendHitMessageToMonster(card.cardNum)
 
         this.refreshCardsArrangement();

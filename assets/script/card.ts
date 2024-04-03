@@ -101,6 +101,7 @@ export class card extends Component {
         let _sIndex:number = this.node.parent.children.length;
         this.node.parent.getComponent(Layout).enabled = false;
         this.node.setSiblingIndex(_sIndex);
+        this.node.setScale(new Vec3(1.3,1.3,1));
     }
 
     onTouchMove(event:EventTouch){
@@ -127,7 +128,10 @@ export class card extends Component {
 
     backToStartPosition(){
         tween(this.node)
-        .to(0.2,{position:this._startPosition},{ easing: 'quartIn'})
+        .parallel(
+            tween().to(0.2,{position:this._startPosition},{ easing: 'quartIn'}),
+            tween().to(0.2,{scale:new Vec3(1,1,1)},{ easing: 'quartIn'})
+        )
         .call(()=>{
             this.node.setSiblingIndex(this._startSibling);
             this._isCanTouch = true;
@@ -154,7 +158,24 @@ export class card extends Component {
     moveToHandAnim(){
         return new Promise<void>((resolve)=>{
             tween(this.node)
-            .by(0.2,{position:new Vec3(450,0,0)})
+            .by(0.2,{position:new Vec3(450,0,0)},{ easing: 'quartIn'})
+            .call(()=>{
+                resolve();
+            })
+            .start();
+        })
+    }
+
+    moveToDiscardPile(){
+        return new Promise<void>((resolve)=>{
+            //不同2dUI 坐标系之间的转换
+            let enPosi:Vec3 = this._heroCom.discardNode.worldPosition;
+            let locPosi:Vec3 = this.node.parent.getComponent(UITransform).convertToNodeSpaceAR(enPosi);
+            tween(this.node)
+            .parallel(
+                tween().to(0.5,{position:locPosi},{ easing: 'quartIn'}),
+                tween().to(0.5,{scale:new Vec3(0.2,0.2,1)},{ easing: 'quartIn'})
+            )
             .call(()=>{
                 resolve();
             })

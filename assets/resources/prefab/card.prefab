@@ -312,7 +312,7 @@
       "a": 255
     },
     "_spriteFrame": {
-      "__uuid__": "32b2a856-c62d-457c-8963-6401e0adc257@f9941",
+      "__uuid__": "a9fad745-9744-457d-be9e-1defefc9db62@f9941",
       "__expectedType__": "cc.SpriteFrame"
     },
     "_type": 0,
@@ -784,7 +784,7 @@
     "_isBold": false,
     "_isUnderline": false,
     "_underlineHeight": 2,
-    "_cacheMode": 0,
+    "_cacheMode": 1,
     "_enableOutline": false,
     "_outlineColor": {
       "__type__": "cc.Color",
