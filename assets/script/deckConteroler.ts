@@ -2,6 +2,7 @@ import { _decorator, Component, instantiate, Label, Layout, Node, Prefab } from 
 import { card } from './card';
 import  deckData, { deckObj }  from './deckData';
 import { ListenerManager } from '../event/ListenerManager';
+import { hero } from './hero';
 
 const { ccclass, property } = _decorator;
 
@@ -19,16 +20,35 @@ export class deckConteroler extends Component {
     @property(Node)
     discardNode:Node= null;
 
+    @property(Label)
+    leftNumLabel:Label = null;
+
     private _allCardsArray:card[]=[];
     private _handCardsArray:card[]=[];
     private _discardArray:card[]=[];
+    private _mHero:hero = null;
+
+    initSelf(_hero:hero){
+        this._mHero = _hero;
+    }
 
     start() {
         this.setDeckByDeckData();
+        this.leftNumLabel.string = this._allCardsArray.length.toString();
+        this.drawCardsFromAll(this._mHero.drawCardsAbility);
+    }
 
-        this.schedule(()=>{
+    endTurnButton(){
+        this._mHero.heroEndTurn();
+    }
+
+    drawCardsFromAll(drawNum:number){
+        let interval = 0.4;// 以秒为单位的时间间隔
+        let repeat = drawNum-1;// 重复次数
+        let delay = 0.5;// 开始延时
+        let callback = this.schedule(function() {
             this.getTopOneCardToHand();
-        },0.4,3,1)
+        }, interval, repeat, delay);
     }
 
     setDeckByDeckData(){
@@ -47,7 +67,12 @@ export class deckConteroler extends Component {
     }
 
     async getTopOneCardToHand(){
+        if (this._allCardsArray.length<=0) {
+            console.log ('pile of the cards is empty');
+            return;
+        }
         let topCard:card = this._allCardsArray.pop();
+        this.leftNumLabel.string = this._allCardsArray.length.toString();
         await topCard.showFaceAnim();
         await topCard.moveToHandAnim();
 
@@ -81,12 +106,12 @@ export class deckConteroler extends Component {
     enforceCardByType(card:card){
         switch (card.cardType) {
             case 0:
-                let atkNum:number = -card.cardNum;
+                let atkNum:number = card.cardNum;
                 this.sendHitMessageToMonster(atkNum);
                 break;
             case 1:
                 let defNum:number = card.cardNum;
-                
+                this._mHero.addDefFun(defNum);
                 break;
             case 2:
                 

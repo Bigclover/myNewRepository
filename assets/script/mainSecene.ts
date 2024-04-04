@@ -1,16 +1,58 @@
-import { _decorator, Component, Node, sp,  } from 'cc';
-import AssetsManger from '../assetsManager/AssetsManger';
+import { _decorator, Component, instantiate, Layout, Node, Prefab, sp,  } from 'cc';
+import { monster } from './monster';
+// import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
 
 @ccclass('mainSecene')
 export class mainSecene extends Component {
-    age=20;
+    @property(Layout)
+    monsterLayout:Layout = null;
+
+    @property({type:Prefab})
+    monsterPrefab:Prefab = null;
+
+    private _monstersArray:monster[]=[];
+    
     start() {
-   
+        this.createOneMonster(0,0);//创建测试monster
+    }
+
+    doMonsterAtk(){
+        //后期要排队执行每一个monster的攻击
+        this._monstersArray.forEach(_monster => {
+            _monster.monsterAtkFun();
+        });
+    }
+
+    createOneMonster(id:number,type:number){
+        let monsterIns = instantiate(this.monsterPrefab);
+        let monsterCom:monster = monsterIns.getComponent(monster);
+        monsterCom.init(id,type);
+        this._monstersArray.push(monsterCom);
+        this.monsterLayout.node.addChild(monsterIns);
+    }
+
+    update(deltaTime: number) {
+        
     }
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ///////////////////////////////////////////////////////////////   
     testFun2(){
         let funObj = this.fun2();
         let n1 =funObj.next();
@@ -80,14 +122,10 @@ export class mainSecene extends Component {
         //export default 向外暴露的成员，可以使用任意变量来接收
     }
 
-    update(deltaTime: number) {
-        
-    }
-
-    async setSkeletonByData(aniSke:sp.Skeleton){
-        aniSke.skeletonData = await AssetsManger.instance.loadSpineData("spine/d5_LTZJ_feiji2",'resources');
-        this.playSpine(aniSke,'d5_LTZJ_feiji2_fei',true);
-    }
+    // async setSkeletonByData(aniSke:sp.Skeleton){
+    //     aniSke.skeletonData = await AssetsManger.instance.loadSpineData("spine/d5_LTZJ_feiji2",'resources');
+    //     this.playSpine(aniSke,'d5_LTZJ_feiji2_fei',true);
+    // }
 
     playSpine(spNode:sp.Skeleton, spName:string, loop:boolean) {
         spNode.clearTracks();

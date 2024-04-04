@@ -8,6 +8,7 @@ const { ccclass, property } = _decorator;
 export class monster extends creature {
 
     private _monsterID:number = 0;
+    private _monsterType:number = 0;
 
     protected onEnable(): void {
         ListenerManager.on('hitMonster',this.monsterBeenHit,this);
@@ -17,15 +18,24 @@ export class monster extends creature {
         ListenerManager.off('hitMonster',this.monsterBeenHit,this);
     }
 
+    init(id:number,type:number){
+        this._monsterID = id;
+        this._monsterType = type;
+    }
+
     start() {
         super.start();
+        
+    }
+
+    monsterAtkFun(){
         
     }
 
     monsterBeenHit(monID:number,hitNum:number){
         if (monID!=null && hitNum!=null) {
             if (this._monsterID == monID) {
-                this.beenHit(hitNum);
+                this.dealWithDamage(hitNum);
             }
         }
     }

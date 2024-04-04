@@ -24,10 +24,23 @@ export class creature extends Component {
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
+        this.addDefFun(10);
     }
 
-    setSelfDef(defNum:number){
+    dealWithDamage(damageNum:number){
+        this._crCurDef -= damageNum;
+        if (this._crCurDef < 0) {
+            this.changeHpFun(this._crCurDef);
+        }
+        this.refreshDefUI();
+    }
+
+    addDefFun(defNum:number){
         this._crCurDef += defNum;
+        this.refreshDefUI();
+    }
+
+    refreshDefUI(){
         if (this._crCurDef>0) {
             this.defNode.active = true;
             let _label = this.defNode.getChildByName('num').getComponent(Label);
@@ -38,9 +51,8 @@ export class creature extends Component {
         }
     }
     
-    beenHit(hitNum:number):void{
-        // console.log('hit num = ',hitNum)
-        this._hpChangeArr.push(hitNum);
+    changeHpFun(changeNum:number):void{
+        this._hpChangeArr.push(changeNum);
     }
 
     setCreatureHp(change:number){
