@@ -41,6 +41,11 @@ export class mainSecene extends Component {
         });
     }
 
+    whenMonsterDie(_mon:monster){
+        this.removeItemFormArray<monster>(_mon,this._monstersArray);
+        _mon.node.destroy();
+    }
+
     whenMonsterAtkFinished(){
         this._myHero.heroDrawCards();
     }
@@ -57,6 +62,12 @@ export class mainSecene extends Component {
         
     }
 
+    removeItemFormArray<T>(item:T,arr:T[]){
+        let index = arr.indexOf(item);
+        if (index > -1) {
+            arr.splice(index,1);
+        }
+    }
 
 
 

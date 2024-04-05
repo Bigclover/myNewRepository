@@ -19,6 +19,7 @@ export class creature extends Component {
     @property(Animation)
     fightAnim:Animation = null;
 
+    // protected whoAmI:string = '';
     protected crMaxHp:number=50;
     protected crCurHp:number=50;
     protected _crCurDef:number=0;
@@ -69,7 +70,7 @@ export class creature extends Component {
         this._hpIsChanging = true;
         this.crCurHp += change;
         let curRate:number = 0;
-        if (this.crCurHp >0 || this.crCurHp < this.crMaxHp) {
+        if (this.crCurHp >0 && this.crCurHp < this.crMaxHp) {
             curRate = this.crCurHp/this.crMaxHp;
         }else if (this.crCurHp <= 0) {
             curRate = 0;

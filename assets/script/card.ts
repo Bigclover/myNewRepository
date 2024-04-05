@@ -149,6 +149,9 @@ export class card extends Component {
     }
 
     onTouchEnd(event:EventTouch){
+        if (!this._isCanTouch) {
+            return;
+        }
         this._isCanTouch = false;
         const endlocation = event.getUILocation(); 
         let isContain:boolean = this.releaseRect.contains(endlocation);

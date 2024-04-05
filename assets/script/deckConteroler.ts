@@ -25,6 +25,7 @@ export class deckConteroler extends Component {
     private _allCardsArray:card[]=[];
     private _handCardsArray:card[]=[];
     private _discardArray:card[]=[];
+    private _shuffleArray:card[]=[];
     private _mHero:hero = null;
 
     initSelf(_hero:hero){
@@ -33,7 +34,6 @@ export class deckConteroler extends Component {
 
     start() {
         this.setDeckByDeckData();
-        this.leftNumLabel.string = this._allCardsArray.length.toString();
     }
 
     endTurnButton(){
@@ -53,33 +53,32 @@ export class deckConteroler extends Component {
     }
 
     discardPileBacktoAll(){
-        // this._allCardsArray = [...this._discardArray];
-        // this._discardArray = [];
-        let length:number = this._discardArray.length;
-        for (let i = 0; i < length; i++) {
-            let ind = length - 1 - i;
-            this._discardArray[ind].node.parent= this.allDeckNode;
-            this._allCardsArray.push(this._discardArray.pop()); 
-        }
-        this._allCardsArray;
-        this._discardArray;
-        this.leftNumLabel.string = this._allCardsArray.length.toString();
+        this._shuffleArray = [...this._discardArray];
+        this._discardArray = [];
+        // let length:number = this._discardArray.length;
+        // for (let i = 0; i < length; i++) {
+        //     // let ind = length - 1 - i;
+        //     // this._discardArray[ind].node.parent= this.allDeckNode;
+        //     this._shuffleArray.push(this._discardArray.pop()); 
+        // }
         this.showDiscardNum();
+        this.shuffleCards();
     }
 
     setDeckByDeckData(){
         let dobArry:deckObj[]= deckData.instance.getDeckData();
         for (let i = 0; i < dobArry.length; i++) {
-             this.addToAllCardsArray(i,dobArry[i]);
+             this.addToShuffleArray(i,dobArry[i]);
         }
+
+        this.shuffleCards();
      }
 
-     addToAllCardsArray(id:number,_dob:deckObj){
+    addToShuffleArray(id:number,_dob:deckObj){
         let cardIns = instantiate(this.cardPrefab);
         let cardCom:card = cardIns.getComponent(card);
         cardCom.init(id,_dob,this);
-        this._allCardsArray.push(cardCom);
-        this.allDeckNode.addChild(cardIns);
+        this._shuffleArray.push(cardCom);
     }
 
     async getTopOneCardToHand(){
@@ -92,8 +91,6 @@ export class deckConteroler extends Component {
         await topCard.showFaceAnim();
         await topCard.moveToHandAnim();
 
-        // topCard.node.removeFromParent();
-        // this.cardLayout.node.addChild(topCard.node);
         topCard.node.parent = this.cardLayout.node;
         this._handCardsArray.push(topCard);
         topCard.setTouchable(true);
@@ -113,6 +110,7 @@ export class deckConteroler extends Component {
         this.enforceCardByType(card);
         await card.moveToDiscardPile();
         card.node.removeFromParent();
+        this.removeItemFormArray<card>(card,this._handCardsArray);
         // card.node.parent = this.discardNode.getChildByName('cacheCards');
         card.reSetSelf();
         
@@ -147,6 +145,24 @@ export class deckConteroler extends Component {
 
     update(deltaTime: number) {
         
+    }
+
+    shuffleCards(){
+        let length:number = this._shuffleArray.length;
+        for (let i = 0; i < length; i++) {
+            let randomCard:card = this.randomArray<card>(this._shuffleArray);
+            this.removeItemFormArray<card>(randomCard,this._shuffleArray);
+            this._allCardsArray.push(randomCard);
+            this.allDeckNode.addChild(randomCard.node);   
+        }
+        this.leftNumLabel.string = this._allCardsArray.length.toString();   
+    }
+
+    removeItemFormArray<T>(item:T,arr:T[]){
+        let index = arr.indexOf(item);
+        if (index > -1) {
+            arr.splice(index,1);
+        }
     }
 
     /**

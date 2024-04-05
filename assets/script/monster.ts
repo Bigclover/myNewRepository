@@ -55,6 +55,9 @@ export class monster extends creature {
 
     update(deltaTime: number) {
         super.update(deltaTime);
+        if (!this._hpIsChanging && this._hpChangeArr.length <= 0 && this.crCurHp <=0) {
+            this._mianSecene.whenMonsterDie(this);
+        }
     }
 }
 
