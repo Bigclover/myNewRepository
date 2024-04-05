@@ -1,4 +1,4 @@
-import { _decorator, Component, Label, Node, ProgressBar, tween } from 'cc';
+import { _decorator, Animation, Component, Label, Node, ProgressBar, tween } from 'cc';
 
 
 const { ccclass, property } = _decorator;
@@ -16,6 +16,9 @@ export class creature extends Component {
     @property(Node)
     defNode:Node= null;
 
+    @property(Animation)
+    fightAnim:Animation = null;
+
     protected crMaxHp:number=50;
     protected crCurHp:number=50;
     protected _crCurDef:number=0;
@@ -27,12 +30,19 @@ export class creature extends Component {
         this.addDefFun(10);
     }
 
+    playBeenHittedAnim(){
+        this.scheduleOnce(()=>{
+            this.fightAnim.play('hitted');
+        },0.2)
+    }
+
     dealWithDamage(damageNum:number){
         this._crCurDef -= damageNum;
         if (this._crCurDef < 0) {
             this.changeHpFun(this._crCurDef);
         }
         this.refreshDefUI();
+        this.playBeenHittedAnim();
     }
 
     addDefFun(defNum:number){

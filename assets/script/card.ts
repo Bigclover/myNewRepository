@@ -31,20 +31,21 @@ export class card extends Component {
     private releaseRect:Rect = null;
     private _deckControler:deckConteroler = null;
     private _startSibling:number = 0;
-    private _isCanTouch:boolean = true;
+    private _isCanTouch:boolean = false;
 
-    protected onEnable(): void {
-        this.node.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
-        this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
-    }
-
-    protected onDisable(): void {
-        this.node.off(Node.EventType.TOUCH_START, this.onTouchBegin, this);
-        this.node.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+    public setTouchable(isCanTouch:boolean): void {
+        if (isCanTouch) {
+            this.node.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+            this.node.on(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+            this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+            this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+        } else {
+            this.node.off(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+            this.node.off(Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+            this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+            this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+        }
+        this._isCanTouch = isCanTouch;
     }
 
     init(id:number,deckObj:deckObj,mc:deckConteroler){
@@ -61,7 +62,7 @@ export class card extends Component {
     }
 
     start() {
-        this.nameLabel.string = this.cardName;
+        this.nameLabel.string = this.cardName +"ID:"+this.cardID;
         this.numLabel.string = this.cardNum.toString();
         let typePatch:string = this.getImgPatchByType(this.cardType);
         resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
@@ -110,7 +111,14 @@ export class card extends Component {
         this.bgSprite.node.active = !isShow;
     }
 
-    sendSelfToHero(){
+    reSetSelf(){
+        this.node.setPosition(0,0,0);
+        this.node.setScale(new Vec3(1,1,1));
+        this.setCardFace(false);
+        this.setTouchable(false);
+    }
+
+    sendSelfToConteroler(){
         this._deckControler.receiveCard(this);
     }
 
@@ -145,7 +153,7 @@ export class card extends Component {
         const endlocation = event.getUILocation(); 
         let isContain:boolean = this.releaseRect.contains(endlocation);
         if (isContain) {
-            this.sendSelfToHero();
+            this.sendSelfToConteroler();
         }else{
             this.backToStartPosition();
         }
@@ -169,7 +177,6 @@ export class card extends Component {
             tween(this.node)
             .to(0.2,{scale:new Vec3(0,1,1)})
             .call(()=>{
-                //当有卡背卡面之分时 这时也要设置卡面sprite显示
                 this.setCardFace(true);
             })
             .to(0.2,{scale:new Vec3(1,1,1)})

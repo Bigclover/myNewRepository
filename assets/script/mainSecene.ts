@@ -1,5 +1,6 @@
 import { _decorator, Component, instantiate, Layout, Node, Prefab, sp,  } from 'cc';
 import { monster } from './monster';
+import { hero } from './hero';
 // import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
 
@@ -11,10 +12,26 @@ export class mainSecene extends Component {
     @property({type:Prefab})
     monsterPrefab:Prefab = null;
 
+    @property(Node)
+    heroNode:Node = null;
+
+    @property({type:Prefab})
+    heroPrefab:Prefab = null;
+
     private _monstersArray:monster[]=[];
+    private _myHero:hero = null;
     
     start() {
+        this.createMyHero();
         this.createOneMonster(0,0);//创建测试monster
+    }
+
+    createMyHero(){
+        let myHero = instantiate(this.heroPrefab)
+        let myHeroCom:hero = myHero.getComponent(hero);
+        myHeroCom.init(this);
+        this.heroNode.addChild(myHero);
+        this._myHero = myHeroCom;
     }
 
     doMonsterAtk(){
@@ -24,10 +41,14 @@ export class mainSecene extends Component {
         });
     }
 
+    whenMonsterAtkFinished(){
+        this._myHero.heroDrawCards();
+    }
+
     createOneMonster(id:number,type:number){
         let monsterIns = instantiate(this.monsterPrefab);
         let monsterCom:monster = monsterIns.getComponent(monster);
-        monsterCom.init(id,type);
+        monsterCom.init(id,type,this);
         this._monstersArray.push(monsterCom);
         this.monsterLayout.node.addChild(monsterIns);
     }

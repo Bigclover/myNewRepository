@@ -23,11 +23,16 @@ export default class deckData{
     }
 
     private _curDeckData:deckObj[]=
-    [{cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
+    [{cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''},
+    {cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''},
+    {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
     {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
     {cardName:'重击',baseEffect:[{type:0,num:20}],descr:''},
     {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},              
+    {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
+    {cardName:'格挡2',baseEffect:[{type:1,num:15}],descr:''},
+    {cardName:'格挡2',baseEffect:[{type:1,num:15}],descr:''},
+    {cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''}             
     ];
 
     public getDeckData():deckObj[]{
