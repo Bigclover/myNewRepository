@@ -26,6 +26,8 @@ export class hero extends creature {
 
     init(main:mainSecene){
         this._mianSecene = main;
+        this.crMaxHp=60;
+        this.crCurHp = this.crMaxHp;
     }
 
     start() {
@@ -37,18 +39,24 @@ export class hero extends creature {
         },2)
     }
 
+    roundStart(round:number){
+        this._crCurDef = 0;
+        this.refreshDefUI();
+    }
+
     heroDrawCards(){
         this._myDeckCont.drawCardsFromAll(this.drawCardsAbility);
     }
 
     heroEndTurn(){
         //结束出牌 通知主战斗场景 进入monster turn
-        this._mianSecene.doMonsterAtk()
+        this._mianSecene.monsterRoundStart();
     }
 
     doHeroAtk(atkNum:number){
         this.fightAnim.play('atk');
-        ListenerManager.dispatch('hitMonster',0,atkNum);
+        let monsterId:number = this._mianSecene.getSelectedMonster();
+        ListenerManager.dispatch('hitMonster',monsterId,atkNum);
     }
 
     creatorDeckControler(){
@@ -65,7 +73,9 @@ export class hero extends creature {
 
     update(deltaTime: number) {
         super.update(deltaTime);
-
+        if (!this._hpIsChanging && this._hpChangeArr.length <= 0 && this.crCurHp <=0) {
+            this._mianSecene.whenHeroDie();
+        }
     }
 }
 

@@ -95,8 +95,11 @@ export class card extends Component {
             case 2:
                 _patch = 'life';
                 break;
+            case 3:
+                _patch = 'draw';
+                break;
             default:
-                _patch = 'atk';
+                _patch = 'speed';
                 break;
         }
         _patch = `img/cardType/${_patch}/spriteFrame`;

@@ -1,6 +1,7 @@
-import { _decorator, Component, instantiate, Layout, Node, Prefab, sp,  } from 'cc';
+import { _decorator, Component, instantiate, JsonAsset, Layout, Node, Prefab, sp, tween,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
+
 // import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
 
@@ -18,12 +19,29 @@ export class mainSecene extends Component {
     @property({type:Prefab})
     heroPrefab:Prefab = null;
 
+    @property(JsonAsset)
+    monsterConfig:JsonAsset = null
+
     private _monstersArray:monster[]=[];
     private _myHero:hero = null;
+    private _monsterJson:object = null;
+    public heroRound:number = 1;
+    private _curSelectMonster:number = 0;
     
+    protected onLoad(): void {
+        this._monsterJson = this.monsterConfig.json;
+    }
+
     start() {
         this.createMyHero();
-        this.createOneMonster(0,0);//创建测试monster
+        this.createMonsters(2);
+    }
+
+    createMonsters(num:number){
+        for (let i = 0; i < num; i++) {
+            this.createOneMonster(i,this._monsterJson[i]);//创建测试monster
+        }
+        this._monstersArray.sort(this.compare("crSpeed"));
     }
 
     createMyHero(){
@@ -34,26 +52,85 @@ export class mainSecene extends Component {
         this._myHero = myHeroCom;
     }
 
-    doMonsterAtk(){
-        //后期要排队执行每一个monster的攻击
-        this._monstersArray.forEach(_monster => {
-            _monster.monsterAtkFun();
-        });
+    setSelectedMonster(num:number){
+        this._curSelectMonster = num;
+        this.setSelectedTag(num);
+    }
+
+    getSelectedMonster(){
+        return this._curSelectMonster;
+    }
+
+    setSelectedTag(num:number){
+        this._monstersArray.forEach((_mon)=>{
+            if (_mon.getMonsterID()==num) {
+                _mon.setSelectTag(true)
+            } else {
+                _mon.setSelectTag(false)
+            }
+        })
+    }
+
+    whenHeroDie(){
+        console.log('Game Over!!!!!');
     }
 
     whenMonsterDie(_mon:monster){
         this.removeItemFormArray<monster>(_mon,this._monstersArray);
         _mon.node.destroy();
+        if (this._monstersArray.length > 0) {
+            let mID = this._monstersArray[0].getMonsterID();
+            this.setSelectedMonster(mID);
+        }
     }
 
-    whenMonsterAtkFinished(){
+    monsterActFinished(){
+        this.heroRoundStart();
+    }
+
+    heroRoundStart(){
+        this.heroRound++;
+        this._myHero.roundStart(this.heroRound);
         this._myHero.heroDrawCards();
     }
 
-    createOneMonster(id:number,type:number){
+     monsRound(index:number) {
+        return new Promise<void>((resolve)=> {
+            setTimeout(()=>{
+                this._monstersArray[index].roundStart();
+                resolve()
+            },(index+1)*1000)
+        })
+    }
+
+    async monsterRoundStart(){
+        let mrArray=[]
+        for (let i = 0; i < this._monstersArray.length; i++) {
+            mrArray.push(this.monsRound(i));
+        }
+        for await (let monsRound of mrArray) {}
+        this.monsterActFinished();
+    }
+
+    compare(property){//按照数组每个元素对象的某一个属性值的大小降序排序
+        return function(obj1,obj2){
+            let value1 = obj1[property];
+            let value2 = obj2[property];
+            return value2-value1;
+        }
+    }
+
+    // doMonsterAtk(){
+    //     //后期要排队执行每一个monster的攻击
+    //     this._monstersArray.forEach(_monster => {
+    //         _monster.monsterAI();
+    //     });
+    // }
+
+    createOneMonster(id:number,monsterInfo:object){
         let monsterIns = instantiate(this.monsterPrefab);
         let monsterCom:monster = monsterIns.getComponent(monster);
-        monsterCom.init(id,type,this);
+        monsterCom.init(id,<any>monsterInfo,this);
         this._monstersArray.push(monsterCom);
         this.monsterLayout.node.addChild(monsterIns);
     }

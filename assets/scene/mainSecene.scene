@@ -178,7 +178,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 381.9799139167862,
+    "_orthoHeight": 360,
     "_near": 0,
     "_far": 1000,
     "_color": {
@@ -624,6 +624,10 @@
     "heroPrefab": {
       "__uuid__": "ec7bfd64-da6f-488c-adf2-5912c8368aa9",
       "__expectedType__": "cc.Prefab"
+    },
+    "monsterConfig": {
+      "__uuid__": "9d699bc6-2f5a-426b-927c-65595fa70cc3",
+      "__expectedType__": "cc.JsonAsset"
     },
     "_id": "01+xZAuAhKlIjfj65Z8V6y"
   },

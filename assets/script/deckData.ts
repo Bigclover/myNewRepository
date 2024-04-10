@@ -27,12 +27,13 @@ export default class deckData{
     {cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''},
     {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
     {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
-    {cardName:'重击',baseEffect:[{type:0,num:20}],descr:''},
+    {cardName:'神抽',baseEffect:[{type:3,num:1}],descr:''},
     {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
     {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
     {cardName:'格挡2',baseEffect:[{type:1,num:15}],descr:''},
-    {cardName:'格挡2',baseEffect:[{type:1,num:15}],descr:''},
-    {cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''}             
+    {cardName:'恢复',baseEffect:[{type:2,num:10}],descr:''},
+    {cardName:'恢复',baseEffect:[{type:2,num:10}],descr:''},
+    {cardName:'神抽',baseEffect:[{type:3,num:1}],descr:''}          
     ];
 
     public getDeckData():deckObj[]{

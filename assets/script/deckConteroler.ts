@@ -135,7 +135,7 @@ export class deckConteroler extends Component {
                 this._mHero.addDefFun(card.cardNum);
                 break;
             case 2:
-                
+                this._mHero.addHpFun(card.cardNum);
                 break;
             default:
                 

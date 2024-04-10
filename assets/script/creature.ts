@@ -1,4 +1,5 @@
-import { _decorator, Animation, Component, Label, Node, ProgressBar, tween } from 'cc';
+import { _decorator, Animation, AnimationState, Component, instantiate, Label, Node, Prefab, ProgressBar, tween } from 'cc';
+import { flowNumber } from './flowNumber';
 
 
 const { ccclass, property } = _decorator;
@@ -19,16 +20,21 @@ export class creature extends Component {
     @property(Animation)
     fightAnim:Animation = null;
 
+    @property(Prefab)
+    flowNum:Prefab= null;
+
     // protected whoAmI:string = '';
-    protected crMaxHp:number=50;
-    protected crCurHp:number=50;
+    protected crMaxHp:number=0;
+    protected crCurHp:number=0;
     protected _crCurDef:number=0;
     protected _hpChangeArr:number[]=[];
     protected _hpIsChanging:boolean = false;
+    protected crSpeed:number = 0;
+
+  
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
-        this.addDefFun(10);
     }
 
     playBeenHittedAnim(){
@@ -47,8 +53,21 @@ export class creature extends Component {
     }
 
     addDefFun(defNum:number){
+        this.fightAnim.play('shield');
         this._crCurDef += defNum;
         this.refreshDefUI();
+    }
+
+    addHpFun(hpNum:number){
+        if (hpNum > 0) {
+            this.changeHpFun(hpNum);
+        }
+    }
+
+    addflowNum(num:number){
+        let _flowNum = instantiate(this.flowNum);
+        _flowNum.getComponent(flowNumber).init(num);
+        this.node.addChild(_flowNum);
     }
 
     refreshDefUI(){
@@ -67,6 +86,7 @@ export class creature extends Component {
     }
 
     setCreatureHp(change:number){
+        this.addflowNum(change);
         this._hpIsChanging = true;
         this.crCurHp += change;
         let curRate:number = 0;
@@ -96,5 +116,7 @@ export class creature extends Component {
             this.setCreatureHp(changeNum);
         }
     }
+
+ 
 }
 
