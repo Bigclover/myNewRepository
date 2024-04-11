@@ -25,7 +25,8 @@ export class card extends Component {
     cardID:number = 0;
     cardName:string = '';
     cardType:number = 0;
-    cardNum:number = 0; 
+    cardNum:number = 0;
+    effeNum:number = 0; 
     cardDesc:string = '';
     private bondRect:Rect = null;
     private _startPosition:Vec3=null;
@@ -53,7 +54,8 @@ export class card extends Component {
         this.cardID = id;
         this.cardName = deckObj.cardName;
         this.cardType = deckObj.baseEffect[0].type;
-        this.cardNum = deckObj.baseEffect[0].num; 
+        this.cardNum = deckObj.baseEffect[0].num;
+        this.effeNum = this.cardNum;
         this.cardDesc = deckObj.descr;
         this._deckControler = mc;
     }
@@ -84,6 +86,13 @@ export class card extends Component {
         }
     }
 
+    adjustCardByHero(_type:CardType,effectNum:number){
+        if (this.cardType == _type) {
+            this.effeNum = this.cardNum + effectNum;
+            this.numLabel.string = this.effeNum.toString();
+        }
+    }
+
     getImgPatchByType(type:number):string{
         let _patch:string = '';
         switch (type) {
@@ -99,6 +108,9 @@ export class card extends Component {
             case CardType.DRAWCARD:
                 _patch = 'draw';
                 break;
+            case CardType.EFFECT_ATK:
+                _patch = 'efAtk';
+                break;    
             default:
                 _patch = 'speed';
                 break;

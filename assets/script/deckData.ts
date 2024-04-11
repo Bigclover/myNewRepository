@@ -15,16 +15,17 @@ export default class deckData{
     }
 
     private _curDeckData:deckObj[]=
-    [{cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:15}],descr:''},
-    {cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:15}],descr:''},
-    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
-    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    [{cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    {cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
+    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
     {cardName:'神抽',baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
-    {cardName:'格挡2',baseEffect:[{type:CardType.DEFEND,num:15}],descr:''},
+    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
+    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
+    {cardName:'格挡2',baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
     {cardName:'恢复',baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
     {cardName:'恢复',baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
+    {cardName:'大力丸',baseEffect:[{type:CardType.EFFECT_ATK,num:5}],descr:''},
     {cardName:'神抽',baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''}          
     ];
 

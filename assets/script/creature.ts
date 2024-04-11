@@ -17,6 +17,9 @@ export class creature extends Component {
     @property(Node)
     defNode:Node= null;
 
+    @property(Node)
+    effAtkNode:Node= null;
+
     @property(Animation)
     fightAnim:Animation = null;
 
@@ -30,7 +33,7 @@ export class creature extends Component {
     protected _hpChangeArr:number[]=[];
     protected _hpIsChanging:boolean = false;
     protected crSpeed:number = 0;
-
+    protected crStrength:number = 0; //影响卡片or技能 攻击力
   
 
     start() {
@@ -50,6 +53,15 @@ export class creature extends Component {
         }
         this.refreshDefUI();
         this.playBeenHittedAnim();
+    }
+
+    getEffectAtk(){
+        return this.crStrength;
+    }
+
+    addEffectAtk(eff:number){
+        this.crStrength += eff;
+        this.refreshEffeAtkUI();
     }
 
     addDefFun(defNum:number){
@@ -78,6 +90,17 @@ export class creature extends Component {
         }else{
             this._crCurDef = 0;
             this.defNode.active = false;
+        }
+    }
+
+    refreshEffeAtkUI(){
+        if (this.crStrength>0) {
+            this.effAtkNode.active = true;
+            let _label = this.effAtkNode.getChildByName('num').getComponent(Label);
+            _label.string = this.crStrength.toString();
+        }else{
+            this.crStrength = 0;
+            this.effAtkNode.active = false;
         }
     }
     

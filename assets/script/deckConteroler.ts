@@ -98,6 +98,24 @@ export class deckConteroler extends Component {
         this._shuffleArray.push(cardCom);
     }
 
+    adjustAllCardsByHero(_type:CardType,effectNum:number){
+        if (this._allCardsArray.length > 0) {
+            this._allCardsArray.forEach(_crad => {
+                _crad.adjustCardByHero(_type,effectNum);
+            });
+        }
+        if (this._handCardsArray.length > 0) {
+            this._handCardsArray.forEach(_crad => {
+                _crad.adjustCardByHero(_type,effectNum);
+            });
+        }
+        if (this._discardArray.length > 0) {
+            this._discardArray.forEach(_crad => {
+                _crad.adjustCardByHero(_type,effectNum);
+            });
+        }
+    }
+
     async getTopOneCardToHand(){
         if (this._allCardsArray.length<=0) {
             console.log ('pile of the cards is empty');
@@ -148,7 +166,7 @@ export class deckConteroler extends Component {
     enforceCardByType(card:card){
         switch (card.cardType) {
             case CardType.ATTACK:
-                this._mHero.doHeroAtk(card.cardNum);
+                this._mHero.doHeroAtk(card.effeNum);
                 break;
             case CardType.DEFEND:
                 this._mHero.addDefFun(card.cardNum);
@@ -158,6 +176,9 @@ export class deckConteroler extends Component {
                 break;
             case CardType.DRAWCARD:
                 this._mHero.drawCardsByCard(card.cardNum);
+                break;
+            case CardType.EFFECT_ATK:
+                this._mHero.addEffectAtk(card.cardNum);
                 break;    
             default:
                 

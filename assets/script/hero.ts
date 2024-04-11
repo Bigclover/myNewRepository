@@ -3,6 +3,7 @@ import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { deckConteroler } from './deckConteroler';
 import { mainSecene } from './mainSecene';
+import { CardType } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
@@ -14,6 +15,7 @@ export class hero extends creature {
     private _mianSecene:mainSecene = null;
     public drawCardsAbility:number = 3;//hero单次抽牌数量
     public remainCardsAbility:number = 2;//hero留牌数量
+    
     private _myDeckCont:deckConteroler = null;
 
     protected onEnable(): void {
@@ -40,8 +42,22 @@ export class hero extends creature {
     }
 
     roundStart(round:number){
-        this._crCurDef = 0;
-        this.refreshDefUI();
+
+        //hero round start 清除单轮效果
+        if (this._crCurDef > 0) {
+            this._crCurDef = 0;
+            this.refreshDefUI();
+        }
+        if (this.crStrength > 0) {
+            this.crStrength=0;
+            this.refreshEffeAtkUI();
+            this._myDeckCont.adjustAllCardsByHero(CardType.ATTACK,this.crStrength);
+        }
+    }
+
+    addEffectAtk(eff:number){
+        super.addEffectAtk(eff);
+        this._myDeckCont.adjustAllCardsByHero(CardType.ATTACK,this.crStrength);
     }
 
     heroDrawCards(){
