@@ -1,23 +1,11 @@
-import { Animation, AnimationState, Label, Node, _decorator} from 'cc';
+import { Label, Node, _decorator} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { mainSecene } from './mainSecene';
+import { effectObj, monInfo } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
-interface skillObj{
-    type:number,//0:攻击 1:护甲
-    num:number
-}
-
-interface monInfo{
-    name:string,
-    level:number,
-    maxHp:number,
-    speed:number,
-    type:number,
-    skills:skillObj[]
-}
 
 @ccclass('monster')
 export class monster extends creature {
@@ -30,7 +18,7 @@ export class monster extends creature {
     private _monsterID:number = 0;
     private _mianSecene:mainSecene = null;
     private _monsterName:string = '';
-    private _skillsArray:skillObj[]=[];
+    private _skillsArray:effectObj[]=[];
 
     protected onEnable(): void {
         ListenerManager.on('hitMonster',this.monsterBeenHit,this);
@@ -89,7 +77,7 @@ export class monster extends creature {
 
     monsterAI(){
         // let animTime:number=0;
-        let skill:skillObj = this.randomArray<skillObj>(this._skillsArray);
+        let skill:effectObj = this.randomArray<effectObj>(this._skillsArray);
         switch (skill.type) {
             case 0:
                 this.monsterAtkFun(skill.num);

@@ -1,6 +1,7 @@
 import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, resources, Sprite, SpriteFrame, tween, UITransform, Vec2, Vec3 } from 'cc';
-import { deckObj } from './deckData';
+import { deckObj } from './gameConfing';
 import { deckConteroler } from './deckConteroler';
+import { CardType } from './gameConfing';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
@@ -86,16 +87,16 @@ export class card extends Component {
     getImgPatchByType(type:number):string{
         let _patch:string = '';
         switch (type) {
-            case 0:
+            case CardType.ATTACK:
                 _patch = 'atk';
                 break;
-            case 1:
+            case CardType.DEFEND:
                 _patch = 'def';
                 break;
-            case 2:
+            case CardType.REVIVE:
                 _patch = 'life';
                 break;
-            case 3:
+            case CardType.DRAWCARD:
                 _patch = 'draw';
                 break;
             default:

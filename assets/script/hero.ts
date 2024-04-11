@@ -48,6 +48,10 @@ export class hero extends creature {
         this._myDeckCont.drawCardsFromAll(this.drawCardsAbility);
     }
 
+    drawCardsByCard(num:number){
+        this._myDeckCont.drawCardsFromAll(num);
+    }
+
     heroEndTurn(){
         //结束出牌 通知主战斗场景 进入monster turn
         this._mianSecene.monsterRoundStart();

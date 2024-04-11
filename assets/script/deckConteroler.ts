@@ -1,7 +1,8 @@
 import { _decorator, Component, instantiate, Label, Layout, Node, Prefab } from 'cc';
 import { card } from './card';
-import  deckData, { deckObj }  from './deckData';
+import  deckData from './deckData';
 import { hero } from './hero';
+import { CardType, deckObj } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
@@ -128,15 +129,18 @@ export class deckConteroler extends Component {
 
     enforceCardByType(card:card){
         switch (card.cardType) {
-            case 0:
+            case CardType.ATTACK:
                 this._mHero.doHeroAtk(card.cardNum);
                 break;
-            case 1:
+            case CardType.DEFEND:
                 this._mHero.addDefFun(card.cardNum);
                 break;
-            case 2:
+            case CardType.REVIVE:
                 this._mHero.addHpFun(card.cardNum);
                 break;
+            case CardType.DRAWCARD:
+                this._mHero.drawCardsByCard(card.cardNum);
+                break;    
             default:
                 
                 break;
@@ -175,27 +179,5 @@ export class deckConteroler extends Component {
         return arr[index];
     }
 
-    deepCopy(obj1) {
-		var obj2 = Array.isArray(obj1) ? [] : {};
-		if (obj1 && typeof obj1 === "object") {
-		  for (var i in obj1) {
-			var prop = obj1[i]; // 避免相互引用造成死循环，如obj1.a=obj
-			if (prop == obj1) {
-			  continue;
-			}
-			if (obj1.hasOwnProperty(i)) {
-			  // 如果子属性为引用数据类型，递归复制
-			  if (prop && typeof prop === "object") {
-				obj2[i] = (prop.constructor === Array) ? [] : {};
-				arguments.callee(prop, obj2[i]); // 递归调用
-			  } else {
-				// 如果是基本数据类型，只是简单的复制
-				obj2[i] = prop;
-			  }
-			}
-		  }
-		}
-		return obj2;
-	  }
 }
 

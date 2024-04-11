@@ -2,16 +2,8 @@
 // const { ccclass, property } = _decorator;
 // @ccclass('deckData')
 
-interface effectObj{
-    type:number,//0:攻击 1:护甲
-    num:number
-}
+import { CardType, deckObj } from "./gameConfing";
 
-export interface deckObj{
-    cardName:string,
-    baseEffect:effectObj[],
-    descr:string
-}
 
 export default class deckData{
     private static _instance: deckData;
@@ -23,17 +15,17 @@ export default class deckData{
     }
 
     private _curDeckData:deckObj[]=
-    [{cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''},
-    {cardName:'剑击2',baseEffect:[{type:0,num:15}],descr:''},
-    {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
-    {cardName:'剑击',baseEffect:[{type:0,num:10}],descr:''},
-    {cardName:'神抽',baseEffect:[{type:3,num:1}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:1,num:10}],descr:''},
-    {cardName:'格挡2',baseEffect:[{type:1,num:15}],descr:''},
-    {cardName:'恢复',baseEffect:[{type:2,num:10}],descr:''},
-    {cardName:'恢复',baseEffect:[{type:2,num:10}],descr:''},
-    {cardName:'神抽',baseEffect:[{type:3,num:1}],descr:''}          
+    [{cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:15}],descr:''},
+    {cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:15}],descr:''},
+    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    {cardName:'神抽',baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''},
+    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
+    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
+    {cardName:'格挡2',baseEffect:[{type:CardType.DEFEND,num:15}],descr:''},
+    {cardName:'恢复',baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
+    {cardName:'恢复',baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
+    {cardName:'神抽',baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''}          
     ];
 
     public getDeckData():deckObj[]{
