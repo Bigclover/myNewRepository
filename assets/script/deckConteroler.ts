@@ -38,7 +38,23 @@ export class deckConteroler extends Component {
     }
 
     endTurnButton(){
-        this._mHero.heroEndTurn();
+        this.checkRemianHandCards(this._mHero.remainCardsAbility);
+    }
+
+    checkRemianHandCards(_num:number){
+        let _len:number = this._handCardsArray.length
+        if(_len > _num){
+            let surplus = _len - _num;
+            for (let i = 0; i < surplus; i++) {
+                let _card:card = this.randomArray<card>(this._handCardsArray);
+                this.receiveCard(_card,false);
+            }
+            this.scheduleOnce(()=>{
+                this._mHero.heroEndTurn();
+            },0.8)
+        }else{
+            this._mHero.heroEndTurn();
+        }
     }
 
     drawCardsFromAll(drawNum:number){
@@ -107,14 +123,16 @@ export class deckConteroler extends Component {
         })
      }
 
-    async receiveCard(card:card){
-        this.enforceCardByType(card);
+    async receiveCard(card:card,isEnforce:boolean = true){
+        this.removeItemFormArray<card>(card,this._handCardsArray);
+        if (isEnforce) {
+            this.enforceCardByType(card);
+        } else {
+            await card.moveUpAnim()
+        }
         await card.moveToDiscardPile();
         card.node.removeFromParent();
-        this.removeItemFormArray<card>(card,this._handCardsArray);
-        // card.node.parent = this.discardNode.getChildByName('cacheCards');
         card.reSetSelf();
-        
         this._discardArray.push(card);
         this.showDiscardNum();
 

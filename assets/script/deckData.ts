@@ -34,7 +34,7 @@ export default class deckData{
 
     public setDeckData(dData:deckObj[]){
         this._curDeckData = null;
-        this._curDeckData = dData;
+        this._curDeckData = [...dData];
     }
 
     public addCardToDeck(dData:deckObj){

@@ -12,8 +12,8 @@ export class hero extends creature {
     deckContrPre:Prefab = null;
 
     private _mianSecene:mainSecene = null;
-    //hero单次抽牌数量
-    public drawCardsAbility:number = 4;
+    public drawCardsAbility:number = 3;//hero单次抽牌数量
+    public remainCardsAbility:number = 2;//hero留牌数量
     private _myDeckCont:deckConteroler = null;
 
     protected onEnable(): void {
@@ -26,7 +26,7 @@ export class hero extends creature {
 
     init(main:mainSecene){
         this._mianSecene = main;
-        this.crMaxHp=60;
+        this.crMaxHp=50;
         this.crCurHp = this.crMaxHp;
     }
 

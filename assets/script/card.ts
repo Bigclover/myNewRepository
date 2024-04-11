@@ -205,6 +205,11 @@ export class card extends Component {
         })
     }
 
+    async surplusCardLeave(){
+        await this.moveUpAnim();
+        await this.moveToDiscardPile();
+    }
+
     moveToDiscardPile(){
         return new Promise<void>((resolve)=>{
             //不同2dUI 坐标系之间的转换
@@ -215,6 +220,17 @@ export class card extends Component {
                 tween().to(0.5,{position:locPosi},{ easing: 'quartIn'}),
                 tween().to(0.5,{scale:new Vec3(0.2,0.2,1)},{ easing: 'quartIn'})
             )
+            .call(()=>{
+                resolve();
+            })
+            .start();
+        })
+    }
+
+    moveUpAnim(){
+        return new Promise<void>((resolve)=>{
+            tween(this.node)
+            .by(0.3,{position:new Vec3(0,50,0)})
             .call(()=>{
                 resolve();
             })
