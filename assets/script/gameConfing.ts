@@ -13,6 +13,7 @@ export interface effectObj{
 
 export interface deckObj{
     cardName:string,
+    isOneoff:boolean,
     baseEffect:effectObj[],
     descr:string
 }

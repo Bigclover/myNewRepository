@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, JsonAsset, Layout, Node, Prefab, sp, tween,  } from 'cc';
+import { _decorator, Component, instantiate, JsonAsset, Layout, Node, Prefab, Slider, sp, Sprite, tween,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
 

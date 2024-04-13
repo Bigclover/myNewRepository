@@ -15,18 +15,19 @@ export default class deckData{
     }
 
     private _curDeckData:deckObj[]=
-    [{cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
-    {cardName:'剑击2',baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
-    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
-    {cardName:'剑击',baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
-    {cardName:'神抽',baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
-    {cardName:'格挡',baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
-    {cardName:'格挡2',baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
-    {cardName:'恢复',baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
-    {cardName:'恢复',baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
-    {cardName:'大力丸',baseEffect:[{type:CardType.EFFECT_ATK,num:5}],descr:''},
-    {cardName:'神抽',baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''}          
+    [{cardName:'剑击2',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    {cardName:'剑击2',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
+    {cardName:'剑击',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
+    {cardName:'剑击',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
+    {cardName:'神抽',isOneoff:false,baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''},
+    {cardName:'格挡',isOneoff:false,baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
+    {cardName:'格挡',isOneoff:false,baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
+    {cardName:'格挡2',isOneoff:false,baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
+    {cardName:'恢复',isOneoff:false,baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
+    {cardName:'恢复',isOneoff:false,baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
+    {cardName:'大力丸',isOneoff:false,baseEffect:[{type:CardType.EFFECT_ATK,num:5}],descr:''},
+    {cardName:'神力丸',isOneoff:true,baseEffect:[{type:CardType.EFFECT_ATK,num:20}],descr:''},
+    {cardName:'神抽',isOneoff:false,baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''}          
     ];
 
     public getDeckData():deckObj[]{

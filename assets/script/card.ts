@@ -1,7 +1,8 @@
-import { _decorator, Component, EventTouch, Label, Layout, Node, Rect, resources, Sprite, SpriteFrame, tween, UITransform, Vec2, Vec3 } from 'cc';
+import { _decorator, Color, color, Component, EventTouch, Label, Layout, Node, Rect, resources, Sprite, SpriteFrame, tween, UITransform, Vec2, Vec3 } from 'cc';
 import { deckObj } from './gameConfing';
 import { deckConteroler } from './deckConteroler';
 import { CardType } from './gameConfing';
+import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
@@ -27,6 +28,7 @@ export class card extends Component {
     cardType:number = 0;
     cardNum:number = 0;
     effeNum:number = 0; 
+    isOneoff:boolean = false;
     cardDesc:string = '';
     private bondRect:Rect = null;
     private _startPosition:Vec3=null;
@@ -50,13 +52,14 @@ export class card extends Component {
         this._isCanTouch = isCanTouch;
     }
 
-    init(id:number,deckObj:deckObj,mc:deckConteroler){
+    init(id:number,_deckObj:deckObj,mc:deckConteroler){
         this.cardID = id;
-        this.cardName = deckObj.cardName;
-        this.cardType = deckObj.baseEffect[0].type;
-        this.cardNum = deckObj.baseEffect[0].num;
+        this.cardName = _deckObj.cardName;
+        this.isOneoff = _deckObj.isOneoff;
+        this.cardType = _deckObj.baseEffect[0].type;
+        this.cardNum = _deckObj.baseEffect[0].num;
         this.effeNum = this.cardNum;
-        this.cardDesc = deckObj.descr;
+        this.cardDesc = _deckObj.descr;
         this._deckControler = mc;
     }
 
@@ -65,12 +68,20 @@ export class card extends Component {
     }
 
     start() {
-        this.nameLabel.string = this.cardName +"ID:"+this.cardID;
+        if (this.isOneoff) {
+            AssetsManger.instance.loadMaterial("SpriteAblation","shader").then((mData)=>{
+                this.imgSprite.customMaterial = mData;
+                this.nameLabel.customMaterial = mData;
+                this.typeSprite.customMaterial = mData;
+                this.numLabel.customMaterial = mData;
+            })
+        }
+        this.nameLabel.string = this.cardName //+"ID:"+this.cardID;
         this.numLabel.string = this.cardNum.toString();
         let typePatch:string = this.getImgPatchByType(this.cardType);
         resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
             this.typeSprite.spriteFrame = spriteFrame;
-            this.typeSprite.spriteFrame.addRef();
+            // this.typeSprite.spriteFrame.addRef();
         });
         
 
@@ -84,6 +95,28 @@ export class card extends Component {
         if (_rect1) {
             this.releaseRect = _rect1.getComponent(UITransform).getBoundingBoxToWorld()
         }
+    }
+
+    removeFromBattle(){
+        return new Promise<void>((resolve)=>{
+            let interval = 0.1;// 以秒为单位的时间间隔
+            let repeat = 10-1;// 重复次数
+            let delay = 0.1;// 开始延时
+            let _value = 0;
+            let sch = this.schedule(()=> {
+                _value += 0.1;
+                let val =  _value * 1.0;
+                if (_value >= 0.9) {
+                    this.unschedule(sch);
+                    this.node.removeFromParent();
+                    this.node.destroy();
+                    resolve();
+                    return;
+                }
+                this.imgSprite.getRenderMaterial(0)!.setProperty('noiseThreshold',val);
+            }, interval, repeat, delay);
+        })
+        
     }
 
     adjustCardByHero(_type:CardType,effectNum:number){
@@ -255,7 +288,7 @@ export class card extends Component {
     }
 
     protected onDestroy(): void {
-        this.typeSprite.spriteFrame.decRef();
+        // this.typeSprite.spriteFrame.decRef();
         this.typeSprite.spriteFrame=null;
     }
 }

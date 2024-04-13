@@ -145,6 +145,14 @@ export class deckConteroler extends Component {
         this.removeItemFormArray<card>(card,this._handCardsArray);
         if (isEnforce) {
             this.enforceCardByType(card);
+            if (card.isOneoff) {
+                //删除一次性效果卡牌不进入discard，是否可以实现烧牌效果
+                await card.removeFromBattle();
+                // card.node.removeFromParent();
+                // card.node.destroy();
+                this.refreshCardsArrangement();
+                return;
+            }
         } else {
             await card.moveUpAnim()
         }
