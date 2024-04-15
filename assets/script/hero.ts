@@ -74,6 +74,7 @@ export class hero extends creature {
     }
 
     doHeroAtk(atkNum:number){
+        super.doAtkFun();
         this.fightAnim.play('atk');
         let monsterId:number = this._mianSecene.getSelectedMonster();
         ListenerManager.dispatch('hitMonster',monsterId,atkNum);

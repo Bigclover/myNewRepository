@@ -4,6 +4,7 @@ import  deckData from './deckData';
 import { hero } from './hero';
 import { CardType, deckObj } from './gameConfing';
 import { cardsPanel } from './cardsPanel';
+import { AudioMgr } from '../tool/AudioMgr';
 
 const { ccclass, property } = _decorator;
 
@@ -74,7 +75,7 @@ export class deckConteroler extends Component {
         if (this._allCardsArray.length < drawNum) {
             this.discardPileBacktoAll();
         }
-        let interval = 0.4;// 以秒为单位的时间间隔
+        let interval = 0.5;// 以秒为单位的时间间隔
         let repeat = drawNum-1;// 重复次数
         let delay = 0.5;// 开始延时
         this.schedule(function() {
@@ -134,7 +135,7 @@ export class deckConteroler extends Component {
         }
         let topCard:card = this._allCardsArray.pop();
         this.leftNumLabel.string = this._allCardsArray.length.toString();
-        // await topCard.showFaceAnim();
+        AudioMgr.inst.playEffect('audio','card');
         await topCard.moveToHandAnim();
 
         topCard.node.parent = this.cardLayout.node;
@@ -182,6 +183,7 @@ export class deckConteroler extends Component {
     }
 
     showDiscardPanel(){
+        AudioMgr.inst.playEffect('audio','discardBtn');
         this.dpp.active = true;
     }
 

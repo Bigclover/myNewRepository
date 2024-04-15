@@ -1,5 +1,6 @@
 import { _decorator, Animation, AnimationState, Component, instantiate, Label, Node, Prefab, ProgressBar, tween } from 'cc';
 import { flowNumber } from './flowNumber';
+import { AudioMgr } from '../tool/AudioMgr';
 
 
 const { ccclass, property } = _decorator;
@@ -65,6 +66,7 @@ export class creature extends Component {
     }
 
     addDefFun(defNum:number){
+        AudioMgr.inst.playEffect('audio','shield');
         this.fightAnim.play('shield');
         this._crCurDef += defNum;
         this.refreshDefUI();
@@ -72,8 +74,13 @@ export class creature extends Component {
 
     addHpFun(hpNum:number){
         if (hpNum > 0) {
+            AudioMgr.inst.playEffect('audio','addhp');
             this.changeHpFun(hpNum);
         }
+    }
+
+    doAtkFun(){
+        AudioMgr.inst.playEffect('audio','atk');
     }
 
     addflowNum(num:number){

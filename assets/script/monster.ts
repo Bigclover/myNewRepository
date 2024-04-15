@@ -70,6 +70,7 @@ export class monster extends creature {
     }
 
     monsterAtkFun(atkNum:number){
+        super.doAtkFun();
         this.fightAnim.play('atkback');
         console.log('monster ID:'+this._monsterID+"Atk num ="+atkNum);
         ListenerManager.dispatch('hitHero',atkNum);

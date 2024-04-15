@@ -7,8 +7,8 @@ const { ccclass, property } = _decorator;
 
 @ccclass('card')
 export class card extends Component {
-    @property(Sprite)
-    bgSprite:Sprite = null;
+    // @property(Sprite)
+    // bgSprite:Sprite = null;
 
     @property(Sprite)
     imgSprite:Sprite = null;
@@ -242,7 +242,7 @@ export class card extends Component {
     moveToHandAnim(){
         return new Promise<void>((resolve)=>{
             tween(this.node)
-            .by(0.2,{position:new Vec3(450,0,0)},{ easing: 'quartIn'})
+            .by(0.25,{position:new Vec3(450,0,0)},{ easing: 'quartIn'})
             .call(()=>{
                 resolve();
             })
