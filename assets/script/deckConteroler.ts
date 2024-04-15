@@ -3,6 +3,7 @@ import { card } from './card';
 import  deckData from './deckData';
 import { hero } from './hero';
 import { CardType, deckObj } from './gameConfing';
+import { cardsPanel } from './cardsPanel';
 
 const { ccclass, property } = _decorator;
 
@@ -23,11 +24,15 @@ export class deckConteroler extends Component {
     @property(Label)
     leftNumLabel:Label = null;
 
+    @property({type:Prefab})
+    discardPanelPrefab:Prefab = null;
+
     private _allCardsArray:card[]=[];
     private _handCardsArray:card[]=[];
     private _discardArray:card[]=[];
     private _shuffleArray:card[]=[];
     private _mHero:hero = null;
+    private dpp:Node = null;
 
     initSelf(_hero:hero){
         this._mHero = _hero;
@@ -35,6 +40,14 @@ export class deckConteroler extends Component {
 
     start() {
         this.setDeckByDeckData();
+        this.addDppFun();
+    }
+
+    addDppFun(){
+        this.dpp = instantiate(this.discardPanelPrefab);
+        this.dpp.active = false;
+        this.dpp.setPosition(this.dpp.position.x,this.dpp.position.y + 150);
+        this.node.addChild(this.dpp)
     }
 
     endTurnButton(){
@@ -70,14 +83,12 @@ export class deckConteroler extends Component {
     }
 
     discardPileBacktoAll(){
+        this._discardArray.forEach((_card)=>{
+            _card.reSetSelf()
+            _card.node.removeFromParent();
+        })
         this._shuffleArray = [...this._discardArray];
         this._discardArray = [];
-        // let length:number = this._discardArray.length;
-        // for (let i = 0; i < length; i++) {
-        //     // let ind = length - 1 - i;
-        //     // this._discardArray[ind].node.parent= this.allDeckNode;
-        //     this._shuffleArray.push(this._discardArray.pop()); 
-        // }
         this.showDiscardNum();
         this.shuffleCards();
     }
@@ -123,7 +134,7 @@ export class deckConteroler extends Component {
         }
         let topCard:card = this._allCardsArray.pop();
         this.leftNumLabel.string = this._allCardsArray.length.toString();
-        await topCard.showFaceAnim();
+        // await topCard.showFaceAnim();
         await topCard.moveToHandAnim();
 
         topCard.node.parent = this.cardLayout.node;
@@ -148,8 +159,6 @@ export class deckConteroler extends Component {
             if (card.isOneoff) {
                 //删除一次性效果卡牌不进入discard，是否可以实现烧牌效果
                 await card.removeFromBattle();
-                // card.node.removeFromParent();
-                // card.node.destroy();
                 this.refreshCardsArrangement();
                 return;
             }
@@ -160,6 +169,7 @@ export class deckConteroler extends Component {
         card.node.removeFromParent();
         card.reSetSelf();
         this._discardArray.push(card);
+        this.dpp.getComponent(cardsPanel).addOneCard(card);
         this.showDiscardNum();
 
         this.refreshCardsArrangement();
@@ -169,6 +179,10 @@ export class deckConteroler extends Component {
         //弃牌显示
         let counterLabel:Label = this.discardNode.getChildByName('counter').getComponent(Label);
         counterLabel.string = this._discardArray.length.toString();
+    }
+
+    showDiscardPanel(){
+        this.dpp.active = true;
     }
 
     enforceCardByType(card:card){

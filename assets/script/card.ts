@@ -64,7 +64,7 @@ export class card extends Component {
     }
 
     protected onLoad(): void {
-        this.setCardFace(false);
+
     }
 
     start() {
@@ -99,14 +99,15 @@ export class card extends Component {
 
     removeFromBattle(){
         return new Promise<void>((resolve)=>{
-            let interval = 0.1;// 以秒为单位的时间间隔
-            let repeat = 10-1;// 重复次数
+            let interval = 0.01;// 以秒为单位的时间间隔
+            let repeat = 100-1;// 重复次数
             let delay = 0.1;// 开始延时
             let _value = 0;
-            let sch = this.schedule(()=> {
-                _value += 0.1;
+            let sch;
+            this.schedule(sch = ()=> {
+                _value += 0.01;
                 let val =  _value * 1.0;
-                if (_value >= 0.9) {
+                if (_value >= 0.99) {
                     this.unschedule(sch);
                     this.node.removeFromParent();
                     this.node.destroy();
@@ -152,18 +153,17 @@ export class card extends Component {
         return _patch;
     }
 
-    setCardFace(isShow:boolean){
-        this.nameLabel.node.active = isShow;
-        this.typeSprite.node.active = isShow;
-        this.numLabel.node.active = isShow;
-        this.imgSprite.node.active = isShow;
-        this.bgSprite.node.active = !isShow;
-    }
+    // setCardFace(isShow:boolean){
+    //     this.nameLabel.node.active = isShow;
+    //     this.typeSprite.node.active = isShow;
+    //     this.numLabel.node.active = isShow;
+    //     this.imgSprite.node.active = isShow;
+    //     this.bgSprite.node.active = !isShow;
+    // }
 
     reSetSelf(){
         this.node.setPosition(0,0,0);
         this.node.setScale(new Vec3(1,1,1));
-        this.setCardFace(false);
         this.setTouchable(false);
     }
 
@@ -224,20 +224,20 @@ export class card extends Component {
         .start()
     }
 
-    showFaceAnim(){
-        return new Promise<void>((resolve)=>{
-            tween(this.node)
-            .to(0.2,{scale:new Vec3(0,1,1)})
-            .call(()=>{
-                this.setCardFace(true);
-            })
-            .to(0.2,{scale:new Vec3(1,1,1)})
-            .call(()=>{
-                resolve();
-            })
-            .start();
-        })
-    }
+    // showFaceAnim(){
+    //     return new Promise<void>((resolve)=>{
+    //         tween(this.node)
+    //         .to(0.2,{scale:new Vec3(0,1,1)})
+    //         .call(()=>{
+    //             this.setCardFace(true);
+    //         })
+    //         .to(0.2,{scale:new Vec3(1,1,1)})
+    //         .call(()=>{
+    //             resolve();
+    //         })
+    //         .start();
+    //     })
+    // }
 
     moveToHandAnim(){
         return new Promise<void>((resolve)=>{
