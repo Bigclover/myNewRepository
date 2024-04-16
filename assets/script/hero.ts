@@ -3,7 +3,7 @@ import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { deckConteroler } from './deckConteroler';
 import { mainSecene } from './mainSecene';
-import { CardType } from './gameConfing';
+import { skillType } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
@@ -51,13 +51,13 @@ export class hero extends creature {
         if (this.crStrength > 0) {
             this.crStrength=0;
             this.refreshEffeAtkUI();
-            this._myDeckCont.adjustAllCardsByHero(CardType.ATTACK,this.crStrength);
+            this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
         }
     }
 
     addEffectAtk(eff:number){
         super.addEffectAtk(eff);
-        this._myDeckCont.adjustAllCardsByHero(CardType.ATTACK,this.crStrength);
+        this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
     }
 
     heroDrawCards(){

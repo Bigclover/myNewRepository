@@ -7,20 +7,20 @@
         "type":0,
         "skills": [
             {
-                "type":0,
-                "num":10
+                "kType":0,
+                "initNum":10
             },
             {
-                "type":0,
-                "num":20
+                "kType":0,
+                "initNum":20
             },
             {
-                "type":1,
-                "num":10
+                "kType":1,
+                "initNum":10
             },
             {
-                "type":2,
-                "num":10
+                "kType":2,
+                "initNum":10
             }
         ]
     },
@@ -32,20 +32,20 @@
         "type":0,
         "skills": [
             {
-                "type":0,
-                "num":5
+                "kType":0,
+                "initNum":5
             },
             {
-                "type":0,
-                "num":10
+                "kType":0,
+                "initNum":10
             },
             {
-                "type":1,
-                "num":10
+                "kType":1,
+                "initNum":10
             },
             {
-                "type":2,
-                "num":5
+                "kType":2,
+                "initNum":5
             }
         ]
     },
@@ -57,20 +57,20 @@
         "type":0,
         "skills": [
             {
-                "type":0,
-                "num":10
+                "kType":0,
+                "initNum":10
             },
             {
-                "type":0,
-                "num":15
+                "kType":0,
+                "initNum":15
             },
             {
-                "type":1,
-                "num":10
+                "kType":1,
+                "initNum":10
             },
             {
-                "type":2,
-                "num":13
+                "kType":2,
+                "initNum":13
             }
         ]
     }

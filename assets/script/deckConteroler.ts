@@ -2,7 +2,7 @@ import { _decorator, Component, instantiate, Label, Layout, Node, Prefab } from 
 import { card } from './card';
 import  deckData from './deckData';
 import { hero } from './hero';
-import { CardType, deckObj } from './gameConfing';
+import { skillType, deckObj, effectObj } from './gameConfing';
 import { cardsPanel } from './cardsPanel';
 import { AudioMgr } from '../tool/AudioMgr';
 
@@ -110,7 +110,7 @@ export class deckConteroler extends Component {
         this._shuffleArray.push(cardCom);
     }
 
-    adjustAllCardsByHero(_type:CardType,effectNum:number){
+    adjustAllCardsByHero(_type:skillType,effectNum:number){
         if (this._allCardsArray.length > 0) {
             this._allCardsArray.forEach(_crad => {
                 _crad.adjustCardByHero(_type,effectNum);
@@ -156,9 +156,12 @@ export class deckConteroler extends Component {
     async receiveCard(card:card,isEnforce:boolean = true){
         this.removeItemFormArray<card>(card,this._handCardsArray);
         if (isEnforce) {
-            this.enforceCardByType(card);
+            card.cardSkills.forEach((_skill)=>{
+                this.enforceCardByType(_skill);
+            })
+            
             if (card.isOneoff) {
-                //删除一次性效果卡牌不进入discard，是否可以实现烧牌效果
+                //删除一次性效果卡牌不进入discard
                 await card.removeFromBattle();
                 this.refreshCardsArrangement();
                 return;
@@ -187,22 +190,22 @@ export class deckConteroler extends Component {
         this.dpp.active = true;
     }
 
-    enforceCardByType(card:card){
-        switch (card.cardType) {
-            case CardType.ATTACK:
-                this._mHero.doHeroAtk(card.effeNum);
+    enforceCardByType(skill:effectObj){
+        switch (skill.kType) {
+            case skillType.ATTACK:
+                this._mHero.doHeroAtk(skill.effNum);
                 break;
-            case CardType.DEFEND:
-                this._mHero.addDefFun(card.cardNum);
+            case skillType.DEFEND:
+                this._mHero.addDefFun(skill.effNum);
                 break;
-            case CardType.REVIVE:
-                this._mHero.addHpFun(card.cardNum);
+            case skillType.REVIVE:
+                this._mHero.addHpFun(skill.effNum);
                 break;
-            case CardType.DRAWCARD:
-                this._mHero.drawCardsByCard(card.cardNum);
+            case skillType.DRAWCARD:
+                this._mHero.drawCardsByCard(skill.effNum);
                 break;
-            case CardType.EFFECT_ATK:
-                this._mHero.addEffectAtk(card.cardNum);
+            case skillType.EFFECT_ATK:
+                this._mHero.addEffectAtk(skill.effNum);
                 break;    
             default:
                 

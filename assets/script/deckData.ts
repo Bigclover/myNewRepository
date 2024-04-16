@@ -2,7 +2,7 @@
 // const { ccclass, property } = _decorator;
 // @ccclass('deckData')
 
-import { CardType, deckObj } from "./gameConfing";
+import { skillType, deckObj } from "./gameConfing";
 
 
 export default class deckData{
@@ -15,19 +15,19 @@ export default class deckData{
     }
 
     private _curDeckData:deckObj[]=
-    [{cardName:'剑击2',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
-    {cardName:'剑击2',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:10}],descr:''},
-    {cardName:'剑击',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
-    {cardName:'剑击',isOneoff:false,baseEffect:[{type:CardType.ATTACK,num:5}],descr:''},
-    {cardName:'神抽',isOneoff:false,baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''},
-    {cardName:'格挡',isOneoff:false,baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
-    {cardName:'格挡',isOneoff:false,baseEffect:[{type:CardType.DEFEND,num:5}],descr:''},
-    {cardName:'格挡2',isOneoff:false,baseEffect:[{type:CardType.DEFEND,num:10}],descr:''},
-    {cardName:'恢复',isOneoff:false,baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
-    {cardName:'恢复',isOneoff:false,baseEffect:[{type:CardType.REVIVE,num:10}],descr:''},
-    {cardName:'大力丸',isOneoff:false,baseEffect:[{type:CardType.EFFECT_ATK,num:5}],descr:''},
-    {cardName:'神力丸',isOneoff:true,baseEffect:[{type:CardType.EFFECT_ATK,num:20}],descr:''},
-    {cardName:'神抽',isOneoff:false,baseEffect:[{type:CardType.DRAWCARD,num:1}],descr:''}          
+    [{cardName:'剑击',isOneoff:false,baseEffect:[{kType:skillType.ATTACK,initNum:10,effNum:10}],descr:''},
+    {cardName:'剑击',isOneoff:false,baseEffect:[{kType:skillType.ATTACK,initNum:10,effNum:10}],descr:''},
+    {cardName:'剑挡',isOneoff:false,baseEffect:[{kType:skillType.ATTACK,initNum:5,effNum:5},{kType:skillType.DEFEND,initNum:5,effNum:5}],descr:''},
+    {cardName:'剑挡',isOneoff:false,baseEffect:[{kType:skillType.ATTACK,initNum:5,effNum:5},{kType:skillType.DEFEND,initNum:5,effNum:5}],descr:''},
+    {cardName:'神抽',isOneoff:false,baseEffect:[{kType:skillType.DRAWCARD,initNum:1,effNum:1}],descr:''},
+    {cardName:'格挡',isOneoff:false,baseEffect:[{kType:skillType.DEFEND,initNum:5,effNum:5}],descr:''},
+    {cardName:'格挡',isOneoff:false,baseEffect:[{kType:skillType.DEFEND,initNum:5,effNum:5}],descr:''},
+    {cardName:'格挡2',isOneoff:false,baseEffect:[{kType:skillType.DEFEND,initNum:10,effNum:10}],descr:''},
+    {cardName:'恢复',isOneoff:false,baseEffect:[{kType:skillType.REVIVE,initNum:10,effNum:10}],descr:''},
+    {cardName:'恢复',isOneoff:false,baseEffect:[{kType:skillType.REVIVE,initNum:10,effNum:10}],descr:''},
+    {cardName:'大力丸',isOneoff:false,baseEffect:[{kType:skillType.EFFECT_ATK,initNum:5,effNum:5}],descr:''},
+    {cardName:'神力丸',isOneoff:true,baseEffect:[{kType:skillType.EFFECT_ATK,initNum:20,effNum:20}],descr:''},
+    {cardName:'神抽',isOneoff:false,baseEffect:[{kType:skillType.DRAWCARD,initNum:1,effNum:1}],descr:''}          
     ];
 
     public getDeckData():deckObj[]{

@@ -1,4 +1,4 @@
-export enum CardType {
+export enum skillType {
     ATTACK = 0,
     DEFEND = 1,
     REVIVE = 2,
@@ -7,8 +7,9 @@ export enum CardType {
 }
 
 export interface effectObj{
-    type:number,
-    num:number
+    kType:number,
+    initNum:number,
+    effNum:number
 }
 
 export interface deckObj{

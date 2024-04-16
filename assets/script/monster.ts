@@ -79,17 +79,17 @@ export class monster extends creature {
     monsterAI(){
         // let animTime:number=0;
         let skill:effectObj = this.randomArray<effectObj>(this._skillsArray);
-        switch (skill.type) {
+        switch (skill.kType) {
             case 0:
-                this.monsterAtkFun(skill.num);
+                this.monsterAtkFun(skill.initNum);
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:
-                this.addDefFun(skill.num);
+                this.addDefFun(skill.initNum);
                 // animTime = this.fightAnim.getState('shield').duration
                 break;
             case 2:
-                this.addHpFun(skill.num);
+                this.addHpFun(skill.initNum);
                 break;
             default:
                 break;

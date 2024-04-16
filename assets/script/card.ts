@@ -1,8 +1,9 @@
-import { _decorator, Color, color, Component, EventTouch, Label, Layout, Node, Rect, resources, Sprite, SpriteFrame, tween, UITransform, Vec2, Vec3 } from 'cc';
-import { deckObj } from './gameConfing';
+import { _decorator, Component, EventTouch, instantiate, Label, Layout, Node, Prefab, Rect, Sprite, tween, UITransform, Vec3 } from 'cc';
+import { deckObj, effectObj} from './gameConfing';
 import { deckConteroler } from './deckConteroler';
-import { CardType } from './gameConfing';
+import { skillType } from './gameConfing';
 import AssetsManger from '../assetsManager/AssetsManger';
+import { Skill } from './Skill';
 const { ccclass, property } = _decorator;
 
 @ccclass('card')
@@ -16,18 +17,16 @@ export class card extends Component {
     @property(Label)
     nameLabel:Label = null;
 
-    @property(Label)
-    numLabel:Label = null;
+    @property(Node)
+    skillPanel:Node = null;
 
-    @property(Sprite)
-    typeSprite:Sprite = null;
+    @property({type:Prefab})
+    skillPrefab:Prefab = null;
 
 
     cardID:number = 0;
     cardName:string = '';
-    cardType:number = 0;
-    cardNum:number = 0;
-    effeNum:number = 0; 
+    cardSkills:effectObj[]=[];
     isOneoff:boolean = false;
     cardDesc:string = '';
     private bondRect:Rect = null;
@@ -56,9 +55,7 @@ export class card extends Component {
         this.cardID = id;
         this.cardName = _deckObj.cardName;
         this.isOneoff = _deckObj.isOneoff;
-        this.cardType = _deckObj.baseEffect[0].type;
-        this.cardNum = _deckObj.baseEffect[0].num;
-        this.effeNum = this.cardNum;
+        this.cardSkills = [..._deckObj.baseEffect];
         this.cardDesc = _deckObj.descr;
         this._deckControler = mc;
     }
@@ -68,22 +65,23 @@ export class card extends Component {
     }
 
     start() {
-        if (this.isOneoff) {
+        this.nameLabel.string = this.cardName //+"ID:"+this.cardID;
+        this.cardSkills.forEach((skill)=>{
+            let _skill = instantiate(this.skillPrefab);
+            _skill.getComponent(Skill).init(skill.kType,skill.effNum);
+            this.skillPanel.addChild(_skill);
+        })
+
+        if (this.isOneoff) {//如果是一次性卡牌 加入shader效果
             AssetsManger.instance.loadMaterial("SpriteAblation","shader").then((mData)=>{
                 this.imgSprite.customMaterial = mData;
                 this.nameLabel.customMaterial = mData;
-                this.typeSprite.customMaterial = mData;
-                this.numLabel.customMaterial = mData;
+                this.skillPanel.children.forEach((child)=>{
+                    let _skill = child.getComponent(Skill)
+                    _skill.setMaterialFun(mData);
+                })
             })
         }
-        this.nameLabel.string = this.cardName //+"ID:"+this.cardID;
-        this.numLabel.string = this.cardNum.toString();
-        let typePatch:string = this.getImgPatchByType(this.cardType);
-        resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
-            this.typeSprite.spriteFrame = spriteFrame;
-            // this.typeSprite.spriteFrame.addRef();
-        });
-        
 
         //可移动区
         let _rect:Node = this.node.parent.parent.getChildByName('moveContrlRect')
@@ -120,37 +118,22 @@ export class card extends Component {
         
     }
 
-    adjustCardByHero(_type:CardType,effectNum:number){
-        if (this.cardType == _type) {
-            this.effeNum = this.cardNum + effectNum;
-            this.numLabel.string = this.effeNum.toString();
-        }
+    adjustCardByHero(_type:skillType,effectNum:number){
+        this.cardSkills.forEach((skill)=>{
+            if (skill.kType == _type) {
+                skill.effNum = skill.initNum + effectNum;
+                this.adjustSkillDisplay(_type,skill.effNum);
+            }
+        })
     }
 
-    getImgPatchByType(type:number):string{
-        let _patch:string = '';
-        switch (type) {
-            case CardType.ATTACK:
-                _patch = 'atk';
-                break;
-            case CardType.DEFEND:
-                _patch = 'def';
-                break;
-            case CardType.REVIVE:
-                _patch = 'life';
-                break;
-            case CardType.DRAWCARD:
-                _patch = 'draw';
-                break;
-            case CardType.EFFECT_ATK:
-                _patch = 'efAtk';
-                break;    
-            default:
-                _patch = 'speed';
-                break;
-        }
-        _patch = `img/cardType/${_patch}/spriteFrame`;
-        return _patch;
+    adjustSkillDisplay(_type:skillType,num:number){
+        this.skillPanel.children.forEach((child)=>{
+            let _skill = child.getComponent(Skill)
+            if (_skill.skillType == _type) {
+                _skill.setSkillNum(num);
+            }
+        })
     }
 
     // setCardFace(isShow:boolean){
@@ -288,8 +271,7 @@ export class card extends Component {
     }
 
     protected onDestroy(): void {
-        // this.typeSprite.spriteFrame.decRef();
-        this.typeSprite.spriteFrame=null;
+        
     }
 }
 
