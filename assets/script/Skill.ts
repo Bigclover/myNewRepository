@@ -54,9 +54,12 @@ export class Skill extends Component {
                 break;
             case skillType.EFFECT_ATK:
                 _patch = 'efAtk';
-                break;    
+                break;
+            case skillType.MOVE:
+                _patch = 'move';
+                break;      
             default:
-                _patch = 'speed';
+                _patch = 'atk';
                 break;
         }
         _patch = `img/cardType/${_patch}/spriteFrame`;

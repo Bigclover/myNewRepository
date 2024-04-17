@@ -5,6 +5,7 @@
         "maxHp":49,
         "speed":4,
         "type":0,
+        "stand":5,
         "skills": [
             {
                 "kType":0,
@@ -30,6 +31,7 @@
         "maxHp":60,
         "speed":2,
         "type":0,
+        "stand":6,
         "skills": [
             {
                 "kType":0,
@@ -55,6 +57,7 @@
         "maxHp":33,
         "speed":8,
         "type":0,
+        "stand":7,
         "skills": [
             {
                 "kType":0,

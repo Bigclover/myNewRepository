@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, JsonAsset, Layout, Node, Prefab, Slider, sp, Sprite, tween,  } from 'cc';
+import { _decorator, Component, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
 
@@ -22,11 +22,15 @@ export class mainSecene extends Component {
     @property(JsonAsset)
     monsterConfig:JsonAsset = null
 
+    @property(Label)
+    distanceLabel:Label = null;
+
     private _monstersArray:monster[]=[];
     private _myHero:hero = null;
     private _monsterJson:object = null;
     public heroRound:number = 1;
     private _curSelectMonster:number = 0;
+    private _previousDistance:number = 0;
     
     protected onLoad(): void {
         this._monsterJson = this.monsterConfig.json;
@@ -37,11 +41,60 @@ export class mainSecene extends Component {
         this.createMonsters(2);
     }
 
+    heroMoveFinish(){
+        this.showDistance(this._curSelectMonster);
+    }
+
+    getClosestMonster():number{
+        this._monstersArray.sort(this.compareStM("stand"));
+        return this._monstersArray[0].getMonsterID();
+    }
+
+    getMonsterStand(monsterID:number):number{
+        let monsterStand:number;
+        this._monstersArray.forEach((_mon)=>{
+            if (_mon.getMonsterID() == monsterID) {
+                monsterStand =  _mon.getStand();
+                return;
+            }
+        })
+        return monsterStand;
+    }
+
+    showDistance(monsterID:number){
+        let monsterStand = this.getMonsterStand(monsterID);
+        if (typeof monsterStand == 'number') {
+            let heroStand = this._myHero.getStand();
+            let distance:number = Math.abs(heroStand - monsterStand);
+            // this.distanceLabel.string = distance.toString();
+            this.distanceNumAnim(distance);
+            this._previousDistance = distance;
+        }
+    }
+
+    distanceNumAnim(curNum:number){
+        var obj = {num:this._previousDistance};
+        // this.distanceLabel.string = obj.num.toString();
+        let self = this;
+        let _time = this.getTimeByChange(curNum);
+        tween(obj)
+        .to(_time,{num:curNum},{progress(start, end, current, ratio){
+            self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
+            return  start+ (end - start)*ratio;
+        }})
+        .start();
+    }
+
+    getTimeByChange(curNum:number):number{
+        let ratio = 20;
+        let mTime =Math.abs(this._previousDistance - curNum) / ratio;
+        return mTime;
+    }
+
     createMonsters(num:number){
         for (let i = 0; i < num; i++) {
             this.createOneMonster(i,this._monsterJson[i]);//创建测试monster
         }
-        this._monstersArray.sort(this.compare("crSpeed"));
     }
 
     createMyHero(){
@@ -55,6 +108,7 @@ export class mainSecene extends Component {
     setSelectedMonster(num:number){
         this._curSelectMonster = num;
         this.setSelectedTag(num);
+        this.showDistance(num);
     }
 
     getSelectedMonster(){
@@ -104,6 +158,7 @@ export class mainSecene extends Component {
     }
 
     async monsterRoundStart(){
+        this._monstersArray.sort(this.compareMtS("crSpeed"));
         let mrArray=[]
         for (let i = 0; i < this._monstersArray.length; i++) {
             mrArray.push(this.monsRound(i));
@@ -112,11 +167,19 @@ export class mainSecene extends Component {
         this.monsterActFinished();
     }
 
-    compare(property){//按照数组每个元素对象的某一个属性值的大小降序排序
+    compareMtS(property){//按照数组每个元素对象的某一个属性值的大小降序排序
         return function(obj1,obj2){
             let value1 = obj1[property];
             let value2 = obj2[property];
             return value2-value1;
+        }
+    }
+
+    compareStM(property){
+        return function(obj1,obj2){
+            let value1 = obj1[property];
+            let value2 = obj2[property];
+            return value1-value2;
         }
     }
 

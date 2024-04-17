@@ -36,6 +36,7 @@ export class monster extends creature {
         this._monsterName = monsterInfo.name;
         this.crSpeed = monsterInfo.speed;
         this._skillsArray =[...monsterInfo.skills];
+        this.stand = monsterInfo.stand;
     }
 
     start() {
@@ -43,6 +44,7 @@ export class monster extends creature {
         this.info.string ='ID'+this._monsterID +this._monsterName+'speed:'+this.crSpeed;
         if (this._monsterID == 0) {
             this.setSelectTag(true);
+            this._mianSecene.showDistance(this._monsterID);
         }
     }
 

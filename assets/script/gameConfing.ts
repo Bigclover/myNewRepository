@@ -3,13 +3,15 @@ export enum skillType {
     DEFEND = 1,
     REVIVE = 2,
     DRAWCARD = 3,
-    EFFECT_ATK = 4
+    EFFECT_ATK = 4,
+    MOVE = 5
 }
 
 export interface effectObj{
     kType:number,
     initNum:number,
-    effNum:number
+    effNum:number,
+    range:number
 }
 
 export interface deckObj{
@@ -25,6 +27,7 @@ export interface monInfo{
     maxHp:number,
     speed:number,
     type:number,
+    stand:number,
     skills:effectObj[]
 }
 

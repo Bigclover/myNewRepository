@@ -206,7 +206,10 @@ export class deckConteroler extends Component {
                 break;
             case skillType.EFFECT_ATK:
                 this._mHero.addEffectAtk(skill.effNum);
-                break;    
+                break;  
+            case skillType.MOVE:
+                this._mHero.doHeroMove(skill.effNum);
+                break;   
             default:
                 
                 break;

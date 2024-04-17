@@ -1672,6 +1672,7 @@
     "defNode": {
       "__id__": 16
     },
+    "effAtkNode": null,
     "fightAnim": {
       "__id__": 13
     },

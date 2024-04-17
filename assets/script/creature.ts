@@ -35,10 +35,19 @@ export class creature extends Component {
     protected _hpIsChanging:boolean = false;
     protected crSpeed:number = 0;
     protected crStrength:number = 0; //影响卡片or技能 攻击力
+    protected stand:number =0;
   
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
+    }
+
+    getStand():number{
+        return this.stand;
+    }
+
+    setStand(num:number){
+        this.stand = num;
     }
 
     playBeenHittedAnim(){

@@ -34,11 +34,12 @@ export class hero extends creature {
 
     start() {
         super.start();
+        this.stand = -5;
         this.creatorDeckControler();
 
         this.scheduleOnce(()=>{
             this.heroDrawCards();
-        },2)
+        },1)
     }
 
     roundStart(round:number){
@@ -71,6 +72,20 @@ export class hero extends creature {
     heroEndTurn(){
         //结束出牌 通知主战斗场景 进入monster turn
         this._mianSecene.monsterRoundStart();
+    }
+
+    doHeroMove(move:number){
+        let mId = this._mianSecene.getClosestMonster();
+        let mStand = this._mianSecene.getMonsterStand(mId);
+        let endStand = this.stand + move;
+        if (typeof mStand == 'number') {
+            if ( endStand < mStand) { //hero移动不能越过最近的敌人
+                this.stand = endStand
+            } else {
+                this.stand = mStand-1;
+            }
+        }
+        this._mianSecene.heroMoveFinish();
     }
 
     doHeroAtk(atkNum:number){
