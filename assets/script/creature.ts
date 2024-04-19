@@ -24,6 +24,9 @@ export class creature extends Component {
     @property(Animation)
     fightAnim:Animation = null;
 
+    @property(Node)
+    missNode:Node = null;
+
     @property(Prefab)
     flowNum:Prefab= null;
 
@@ -40,6 +43,10 @@ export class creature extends Component {
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
+    }
+
+    getSpeed():number{
+        return this.crSpeed;
     }
 
     getStand():number{
@@ -90,6 +97,10 @@ export class creature extends Component {
 
     doAtkFun(){
         AudioMgr.inst.playEffect('audio','atk');
+    }
+
+    moveFun(){
+        AudioMgr.inst.playEffect('audio','move');
     }
 
     addflowNum(num:number){
@@ -156,6 +167,14 @@ export class creature extends Component {
         }
     }
 
- 
+    missAnim(){
+        this.missNode.active = true;
+        tween(this.missNode)
+        .delay(0.5)
+        .call(()=>{
+            this.missNode.active = false;
+        })
+        .start()
+    }
 }
 

@@ -1925,6 +1925,9 @@
       "__uuid__": "ec9b68ca-4aa3-42b2-9c4b-67a05bc6ea9b",
       "__expectedType__": "cc.Prefab"
     },
+    "butNode": {
+      "__id__": 2
+    },
     "_id": ""
   },
   {

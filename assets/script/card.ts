@@ -35,6 +35,7 @@ export class card extends Component {
     private _deckControler:deckConteroler = null;
     private _startSibling:number = 0;
     private _isCanTouch:boolean = false;
+    private _skillRange:number = 0;
 
     public setTouchable(isCanTouch:boolean): void {
         if (isCanTouch) {
@@ -70,6 +71,10 @@ export class card extends Component {
             let _skill = instantiate(this.skillPrefab);
             _skill.getComponent(Skill).init(skill.kType,skill.effNum);
             this.skillPanel.addChild(_skill);
+            if (skill.kType == skillType.ATTACK) {
+                this._skillRange = skill.range;
+                this.nameLabel.string = this.cardName+'('+this._skillRange+')';
+            }
         })
 
         if (this.isOneoff) {//如果是一次性卡牌 加入shader效果

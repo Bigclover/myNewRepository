@@ -1,6 +1,7 @@
-import { _decorator, Component, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween,  } from 'cc';
+import { _decorator, Component, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween, Vec3,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
+import { mAndvObj } from './gameConfing';
 
 // import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
@@ -22,15 +23,15 @@ export class mainSecene extends Component {
     @property(JsonAsset)
     monsterConfig:JsonAsset = null
 
-    @property(Label)
-    distanceLabel:Label = null;
+    // @property(Label)
+    // distanceLabel:Label = null;
 
     private _monstersArray:monster[]=[];
     private _myHero:hero = null;
     private _monsterJson:object = null;
     public heroRound:number = 1;
     private _curSelectMonster:number = 0;
-    private _previousDistance:number = 0;
+    private _monPositionArr:Vec3[]=[];
     
     protected onLoad(): void {
         this._monsterJson = this.monsterConfig.json;
@@ -42,7 +43,38 @@ export class mainSecene extends Component {
     }
 
     heroMoveFinish(){
-        this.showDistance(this._curSelectMonster);
+        //通知所有monster 更新距离
+        this._monstersArray.forEach((_mon)=>{
+            _mon.showDistance();
+        })
+    }
+
+    refreshMonsterLayout(){
+        // this.monsterLayout.enabled = true;
+        //按照stand重新排序_monstersArray并更新到monsterLayout上
+        this._monPositionArr = [];
+        this._monstersArray.sort(this.compareStM("stand"));
+        this._monstersArray.forEach((_mon)=>{
+            let _index = this._monstersArray.indexOf(_mon);
+            _mon.node.setSiblingIndex(_index);
+        })
+        this.monsterLayout.updateLayout();
+        this._monstersArray.forEach((_monster)=>{
+            _monster.setStartPosition();
+            this._monPositionArr.push( _monster.getCurPosition());
+        })
+     }
+
+    monsterMoveFinished(){
+        if (this._monstersArray.length > 1) {
+            this._monstersArray.sort(this.compareStM("stand"));
+            this._monstersArray.forEach((_mon)=>{
+                let _index = this._monstersArray.indexOf(_mon);
+                if (_mon.getCurPosition() != this._monPositionArr[_index]) {
+                    _mon.monsterToPosition(this._monPositionArr[_index]);
+                }
+            })
+        }
     }
 
     getClosestMonster():number{
@@ -61,40 +93,15 @@ export class mainSecene extends Component {
         return monsterStand;
     }
 
-    showDistance(monsterID:number){
-        let monsterStand = this.getMonsterStand(monsterID);
-        if (typeof monsterStand == 'number') {
-            let heroStand = this._myHero.getStand();
-            let distance:number = Math.abs(heroStand - monsterStand);
-            // this.distanceLabel.string = distance.toString();
-            this.distanceNumAnim(distance);
-            this._previousDistance = distance;
-        }
-    }
-
-    distanceNumAnim(curNum:number){
-        var obj = {num:this._previousDistance};
-        // this.distanceLabel.string = obj.num.toString();
-        let self = this;
-        let _time = this.getTimeByChange(curNum);
-        tween(obj)
-        .to(_time,{num:curNum},{progress(start, end, current, ratio){
-            self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
-            return  start+ (end - start)*ratio;
-        }})
-        .start();
-    }
-
-    getTimeByChange(curNum:number):number{
-        let ratio = 20;
-        let mTime =Math.abs(this._previousDistance - curNum) / ratio;
-        return mTime;
-    }
+    getHeroStand():number{
+        return this._myHero.getStand();
+    } 
 
     createMonsters(num:number){
         for (let i = 0; i < num; i++) {
             this.createOneMonster(i,this._monsterJson[i]);//创建测试monster
         }
+        this.refreshMonsterLayout();
     }
 
     createMyHero(){
@@ -108,7 +115,6 @@ export class mainSecene extends Component {
     setSelectedMonster(num:number){
         this._curSelectMonster = num;
         this.setSelectedTag(num);
-        this.showDistance(num);
     }
 
     getSelectedMonster(){
@@ -135,6 +141,7 @@ export class mainSecene extends Component {
         if (this._monstersArray.length > 0) {
             let mID = this._monstersArray[0].getMonsterID();
             this.setSelectedMonster(mID);
+            this.refreshMonsterLayout();
         }
     }
 
@@ -145,23 +152,35 @@ export class mainSecene extends Component {
     heroRoundStart(){
         this.heroRound++;
         this._myHero.roundStart(this.heroRound);
-        this._myHero.heroDrawCards();
     }
 
-     monsRound(index:number) {
+     monsRound(index:number,monsterID:number) {
         return new Promise<void>((resolve)=> {
             setTimeout(()=>{
-                this._monstersArray[index].roundStart();
+                this._monstersArray.forEach((_monster)=>{
+                    if (_monster.getMonsterID() == monsterID) {
+                        _monster.roundStart();
+                    }
+                })
                 resolve()
             },(index+1)*1000)
         })
     }
 
     async monsterRoundStart(){
-        this._monstersArray.sort(this.compareMtS("crSpeed"));
+        let speedArray:mAndvObj[]=[];
+        this._monstersArray.forEach((_mon)=>{
+            let _mandv:mAndvObj={
+                monId:_mon.getMonsterID(),
+                value:_mon.getSpeed()
+            }
+            speedArray.push(_mandv);
+        })
+        speedArray.sort(this.compareMtS("value"));
+
         let mrArray=[]
-        for (let i = 0; i < this._monstersArray.length; i++) {
-            mrArray.push(this.monsRound(i));
+        for (let i = 0; i < speedArray.length; i++) {
+            mrArray.push(this.monsRound(i,speedArray[i].monId));
         }
         for await (let monsRound of mrArray) {}
         this.monsterActFinished();
@@ -208,8 +227,6 @@ export class mainSecene extends Component {
             arr.splice(index,1);
         }
     }
-
-
 
 
 

@@ -1,4 +1,4 @@
-import { Label, Node, _decorator} from 'cc';
+import { Label, Node, Vec3, _decorator, tween} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { mainSecene } from './mainSecene';
@@ -10,7 +10,7 @@ const { ccclass, property } = _decorator;
 @ccclass('monster')
 export class monster extends creature {
     @property(Label)
-    info:Label = null;
+    distanceLabel:Label = null;
 
     @property(Node)
     checkNode:Node = null;
@@ -19,6 +19,9 @@ export class monster extends creature {
     private _mianSecene:mainSecene = null;
     private _monsterName:string = '';
     private _skillsArray:effectObj[]=[];
+    private _previousDistance:number = 0;
+    private _mMoveAbility:number = 0;
+    private _curPosition:Vec3;
 
     protected onEnable(): void {
         ListenerManager.on('hitMonster',this.monsterBeenHit,this);
@@ -37,15 +40,50 @@ export class monster extends creature {
         this.crSpeed = monsterInfo.speed;
         this._skillsArray =[...monsterInfo.skills];
         this.stand = monsterInfo.stand;
+        this._mMoveAbility = monsterInfo.move;
     }
 
     start() {
         super.start();
-        this.info.string ='ID'+this._monsterID +this._monsterName+'speed:'+this.crSpeed;
+        // 'ID'+this._monsterID +this._monsterName+'speed:'+this.crSpeed;
         if (this._monsterID == 0) {
             this.setSelectTag(true);
-            this._mianSecene.showDistance(this._monsterID);
         }
+        this.showDistance();
+    }
+
+    setStartPosition(){
+        this._curPosition = this.node.getPosition();
+        // this._startSibling = this.node.getSiblingIndex();
+    }
+
+    getCurPosition():Vec3{
+        return this._curPosition;
+    }
+
+    showDistance(){
+        let distance = this.getDistanceFormHero()
+        this.distanceNumAnim(distance);
+        this._previousDistance = distance;
+    }
+
+    distanceNumAnim(curNum:number){
+        var obj = {num:this._previousDistance};
+        // this.distanceLabel.string = obj.num.toString();
+        let self = this;
+        let _time = this.getTimeByChange(curNum);
+        tween(obj)
+        .to(_time,{num:curNum},{progress(start, end, current, ratio){
+            self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
+            return  start+ (end - start)*ratio;
+        }})
+        .start();
+    }
+
+    getTimeByChange(curNum:number):number{
+        let ratio = 20;
+        let mTime =Math.abs(this._previousDistance - curNum) / ratio;
+        return mTime;
     }
 
     roundStart(){
@@ -71,19 +109,34 @@ export class monster extends creature {
         return this._monsterID;
     }
 
-    monsterAtkFun(atkNum:number){
+    monsterAtkFun(_skill:effectObj){
         super.doAtkFun();
         this.fightAnim.play('atkback');
-        console.log('monster ID:'+this._monsterID+"Atk num ="+atkNum);
-        ListenerManager.dispatch('hitHero',atkNum);
+        ListenerManager.dispatch('hitHero',this._monsterID,_skill);
     }
 
-    monsterAI(){
-        // let animTime:number=0;
+    moveAI(range:number){
+        return new Promise<void>((resolve)=>{
+            let dis = this.getDistanceFormHero();
+            if (range < dis) {
+                this.doMonsterMove(this._mMoveAbility);
+                this.scheduleOnce(()=>{ resolve() },0.5);
+            }else if (range/2 > dis) {
+                this.doMonsterMove(-this._mMoveAbility);
+                this.scheduleOnce(()=>{ resolve() },0.5);
+            }else{
+                resolve();
+            }
+        })
+    }
+
+    async monsterAI(){
         let skill:effectObj = this.randomArray<effectObj>(this._skillsArray);
+        console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType);
         switch (skill.kType) {
             case 0:
-                this.monsterAtkFun(skill.initNum);
+                await this.moveAI(skill.range);
+                this.monsterAtkFun(skill);
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:
@@ -98,12 +151,49 @@ export class monster extends creature {
         }
     }
 
-    monsterBeenHit(monID:number,hitNum:number){
-        if (monID!=null && hitNum!=null) {
-            if (this._monsterID == monID) {
-                this.dealWithDamage(hitNum);
+    //多monster时 根据stand 显示上排列
+    monsterToPosition(targetPosi:Vec3){
+        tween(this.node)
+        .to(0.25,{position:targetPosi})
+        .call(()=>{
+            this.setStartPosition();
+        })
+        .start()
+    }
+
+    doMonsterMove(move:number){
+        super.moveFun();
+        let hStand = this._mianSecene.getHeroStand();
+        let endStand = this.stand - move;
+        if (typeof hStand == 'number') {
+            if ( endStand > hStand) { //hero移动不能越过最近的敌人
+                this.stand = endStand
+            } else {
+                this.stand = hStand + 1;
             }
         }
+        this.showDistance();
+        this._mianSecene.monsterMoveFinished();
+    }
+
+    monsterBeenHit(monID:number,skill:effectObj){
+        if (monID!=null && skill!=null) {
+            if (this._monsterID == monID) {
+                let dis = this.getDistanceFormHero();
+                if (skill.range >= dis) {
+                    this.dealWithDamage(skill.effNum);
+                } else {
+                    //攻击范围外 处理未击中效果
+                    this.missAnim();
+                }
+            }
+        }
+    }
+
+    getDistanceFormHero():number{
+        let heroStand = this._mianSecene.getHeroStand();
+        let distance:number = Math.abs(heroStand - this.stand);
+        return distance;
     }
 
     // onFightAnimFinished(type: Animation.EventType, state: AnimationState) {

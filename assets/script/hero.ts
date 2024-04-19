@@ -3,7 +3,7 @@ import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { deckConteroler } from './deckConteroler';
 import { mainSecene } from './mainSecene';
-import { skillType } from './gameConfing';
+import { effectObj, skillType } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
@@ -43,7 +43,6 @@ export class hero extends creature {
     }
 
     roundStart(round:number){
-
         //hero round start 清除单轮效果
         if (this._crCurDef > 0) {
             this._crCurDef = 0;
@@ -54,6 +53,8 @@ export class hero extends creature {
             this.refreshEffeAtkUI();
             this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
         }
+
+        this.heroDrawCards();
     }
 
     addEffectAtk(eff:number){
@@ -61,8 +62,9 @@ export class hero extends creature {
         this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
     }
 
-    heroDrawCards(){
-        this._myDeckCont.drawCardsFromAll(this.drawCardsAbility);
+    async heroDrawCards(){
+        await this._myDeckCont.drawCardsFromAll(this.drawCardsAbility);
+        this._myDeckCont.showTurnButton();
     }
 
     drawCardsByCard(num:number){
@@ -75,6 +77,7 @@ export class hero extends creature {
     }
 
     doHeroMove(move:number){
+        super.moveFun();
         let mId = this._mianSecene.getClosestMonster();
         let mStand = this._mianSecene.getMonsterStand(mId);
         let endStand = this.stand + move;
@@ -88,11 +91,11 @@ export class hero extends creature {
         this._mianSecene.heroMoveFinish();
     }
 
-    doHeroAtk(atkNum:number){
+    doHeroAtk(skill:effectObj){
         super.doAtkFun();
         this.fightAnim.play('atk');
         let monsterId:number = this._mianSecene.getSelectedMonster();
-        ListenerManager.dispatch('hitMonster',monsterId,atkNum);
+        ListenerManager.dispatch('hitMonster',monsterId,skill);
     }
 
     creatorDeckControler(){
@@ -103,8 +106,20 @@ export class hero extends creature {
         this._myDeckCont = dcCom;
     }
 
-    heroBeenHit(atkNum:number){
-        this.dealWithDamage(atkNum);
+    heroBeenHit(mID:number,_skill:effectObj){
+        let dis = this.getDistanceFormMonster(mID);
+        if (_skill.range >= dis) {
+            this.dealWithDamage(_skill.effNum);
+        } else {
+            //攻击范围外 处理未击中效果
+            this.missAnim();
+        }
+    }
+
+    getDistanceFormMonster(mid:number):number{
+        let monsterStand = this._mianSecene.getMonsterStand(mid);
+        let distance:number = Math.abs(this.stand - monsterStand);
+        return distance;
     }
 
     update(deltaTime: number) {

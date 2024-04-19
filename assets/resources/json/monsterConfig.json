@@ -5,23 +5,32 @@
         "maxHp":49,
         "speed":4,
         "type":0,
-        "stand":5,
+        "stand":6,
+        "move":5,
         "skills": [
             {
                 "kType":0,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":2
             },
             {
                 "kType":0,
-                "initNum":20
+                "initNum":10,
+                "effNum":10,
+                "range":2
             },
             {
                 "kType":1,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":1
             },
             {
                 "kType":2,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":1
             }
         ]
     },
@@ -31,23 +40,32 @@
         "maxHp":60,
         "speed":2,
         "type":0,
-        "stand":6,
+        "stand":5,
+        "move":5,
         "skills": [
             {
                 "kType":0,
-                "initNum":5
+                "initNum":5,
+                "effNum":5,
+                "range":1
             },
             {
                 "kType":0,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":1
             },
             {
                 "kType":1,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":1
             },
             {
                 "kType":2,
-                "initNum":5
+                "initNum":5,
+                "effNum":5,
+                "range":1
             }
         ]
     },
@@ -58,22 +76,31 @@
         "speed":8,
         "type":0,
         "stand":7,
+        "move":5,
         "skills": [
             {
                 "kType":0,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":3
             },
             {
                 "kType":0,
-                "initNum":15
+                "initNum":15,
+                "effNum":15,
+                "range":3
             },
             {
                 "kType":1,
-                "initNum":10
+                "initNum":10,
+                "effNum":10,
+                "range":1
             },
             {
                 "kType":2,
-                "initNum":13
+                "initNum":13,
+                "effNum":13,
+                "range":1
             }
         ]
     }

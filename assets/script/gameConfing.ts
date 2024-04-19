@@ -7,6 +7,11 @@ export enum skillType {
     MOVE = 5
 }
 
+export interface mAndvObj{
+  monId:number,
+  value:number
+}
+
 export interface effectObj{
     kType:number,
     initNum:number,
@@ -28,6 +33,7 @@ export interface monInfo{
     speed:number,
     type:number,
     stand:number,
+    move:number,
     skills:effectObj[]
 }
 
@@ -40,6 +46,22 @@ export class gameConfing {
     //     }
     //     return this._instance;
     // }
+
+    public swapArray<T>( array:T[],index1:number,index2:number) {
+      // 如果入参为空，则返回null
+      if (array == null || array.length == 0) {
+      return null;
+      }
+      // 如果下标越界，则返回原数组
+      if (index1 < 0 || index1 >= array.length || index2 < 0 || index2 >= array.length) {
+      return array;
+      }
+      // 交换数组中两个元素的位置
+      let temp:T = array[index1];
+      array[index1] = array[index2];
+      array[index2] = temp;
+      return array;
+  }
 
     deepCopy(obj1) {
 		var obj2 = Array.isArray(obj1) ? [] : {};

@@ -28,6 +28,9 @@ export class deckConteroler extends Component {
     @property({type:Prefab})
     discardPanelPrefab:Prefab = null;
 
+    @property(Node)
+    butNode:Node = null;
+
     private _allCardsArray:card[]=[];
     private _handCardsArray:card[]=[];
     private _discardArray:card[]=[];
@@ -52,7 +55,12 @@ export class deckConteroler extends Component {
     }
 
     endTurnButton(){
+        this.butNode.active = false;
         this.checkRemianHandCards(this._mHero.remainCardsAbility);
+    }
+
+    showTurnButton(){
+        this.butNode.active = true;
     }
 
     checkRemianHandCards(_num:number){
@@ -72,15 +80,22 @@ export class deckConteroler extends Component {
     }
 
     drawCardsFromAll(drawNum:number){
-        if (this._allCardsArray.length < drawNum) {
-            this.discardPileBacktoAll();
-        }
-        let interval = 0.5;// 以秒为单位的时间间隔
-        let repeat = drawNum-1;// 重复次数
-        let delay = 0.5;// 开始延时
-        this.schedule(function() {
-            this.getTopOneCardToHand();
-        }, interval, repeat, delay);
+        return new Promise<void>((resolve)=>{
+            if (this._allCardsArray.length < drawNum) {
+                this.discardPileBacktoAll();
+            }
+            let count:number = 0;
+            let interval = 0.5;// 以秒为单位的时间间隔
+            let repeat = drawNum-1;// 重复次数
+            let delay = 0.5;// 开始延时
+            this.schedule(()=>{
+                count++;
+                this.getTopOneCardToHand();
+                if (count == drawNum) {
+                    resolve();
+                }
+            }, interval, repeat, delay);
+        })
     }
 
     discardPileBacktoAll(){
@@ -193,7 +208,7 @@ export class deckConteroler extends Component {
     enforceCardByType(skill:effectObj){
         switch (skill.kType) {
             case skillType.ATTACK:
-                this._mHero.doHeroAtk(skill.effNum);
+                this._mHero.doHeroAtk(skill);
                 break;
             case skillType.DEFEND:
                 this._mHero.addDefFun(skill.effNum);
