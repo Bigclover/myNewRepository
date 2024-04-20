@@ -2,23 +2,23 @@
     {
         "name":"怪物甲",
         "level":1,
-        "maxHp":49,
+        "maxHp":30,
         "speed":4,
         "type":0,
-        "stand":6,
-        "move":5,
+        "stand":8,
+        "move":4,
         "skills": [
             {
                 "kType":0,
-                "initNum":10,
-                "effNum":10,
-                "range":2
+                "initNum":5,
+                "effNum":5,
+                "range":8
             },
             {
                 "kType":0,
                 "initNum":10,
                 "effNum":10,
-                "range":2
+                "range":8
             },
             {
                 "kType":1,
@@ -37,7 +37,7 @@
     {
         "name":"怪物乙",
         "level":1,
-        "maxHp":60,
+        "maxHp":50,
         "speed":2,
         "type":0,
         "stand":5,

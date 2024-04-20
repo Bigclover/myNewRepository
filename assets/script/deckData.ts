@@ -29,7 +29,7 @@ export default class deckData{
     {cardName:'神力丸',isOneoff:true,baseEffect:[{kType:skillType.EFFECT_ATK,initNum:20,effNum:20,range:0}],descr:''},
     {cardName:'神抽',isOneoff:false,baseEffect:[{kType:skillType.DRAWCARD,initNum:1,effNum:1,range:0}],descr:''},
     {cardName:'前进',isOneoff:false,baseEffect:[{kType:skillType.MOVE,initNum:5,effNum:5,range:0}],descr:''},
-    {cardName:'冲锋',isOneoff:false,baseEffect:[{kType:skillType.MOVE,initNum:10,effNum:10,range:0}],descr:''}          
+    {cardName:'冲锋',isOneoff:false,baseEffect:[{kType:skillType.MOVE,initNum:10,effNum:10,range:0},{kType:skillType.STUN,initNum:1,effNum:1,range:1}],descr:''}          
     ];
 
     public getDeckData():deckObj[]{

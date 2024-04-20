@@ -30,6 +30,9 @@ export class creature extends Component {
     @property(Prefab)
     flowNum:Prefab= null;
 
+    @property(Node)
+    stunNode:Node = null;
+
     // protected whoAmI:string = '';
     protected crMaxHp:number=0;
     protected crCurHp:number=0;
@@ -39,7 +42,9 @@ export class creature extends Component {
     protected crSpeed:number = 0;
     protected crStrength:number = 0; //影响卡片or技能 攻击力
     protected stand:number =0;
-  
+    protected isStunned:boolean = false;
+    protected stunnedTurns:number = 0;
+    protected beenStunnedRound:number = 0;
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
@@ -55,6 +60,20 @@ export class creature extends Component {
 
     setStand(num:number){
         this.stand = num;
+    }
+
+    beenStunnedFun(num:number){
+        this.isStunned = true;
+        this.stunnedTurns = num;
+        this.stunNode.active = true;
+    }
+
+    breakStunFun(curRound:number){
+        let passRound = curRound - this.beenStunnedRound;
+        if (passRound > this.stunnedTurns) {
+            this.isStunned = false;
+            this.stunNode.active = false;
+        }
     }
 
     playBeenHittedAnim(){

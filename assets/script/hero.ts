@@ -91,6 +91,11 @@ export class hero extends creature {
         this._mianSecene.heroMoveFinish();
     }
 
+    stunMonster(skill:effectObj){
+        let monsterId:number = this._mianSecene.getSelectedMonster();
+        ListenerManager.dispatch('hitMonster',monsterId,skill);
+    }
+
     doHeroAtk(skill:effectObj){
         super.doAtkFun();
         this.fightAnim.play('atk');

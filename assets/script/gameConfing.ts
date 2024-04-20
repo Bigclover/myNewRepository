@@ -4,7 +4,8 @@ export enum skillType {
     REVIVE = 2,
     DRAWCARD = 3,
     EFFECT_ATK = 4,
-    MOVE = 5
+    MOVE = 5,
+    STUN = 6
 }
 
 export interface mAndvObj{

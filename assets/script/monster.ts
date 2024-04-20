@@ -2,7 +2,7 @@ import { Label, Node, Vec3, _decorator, tween} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { mainSecene } from './mainSecene';
-import { effectObj, monInfo } from './gameConfing';
+import { effectObj, monInfo, skillType } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
@@ -87,15 +87,22 @@ export class monster extends creature {
     }
 
     roundStart(){
+        if (this.isStunned) {
+            this.breakStunFun(this._mianSecene.getMonsterRound());
+        }
         this._crCurDef = 0;
         this.refreshDefUI();
-        this.monsterAI();
-        return new Promise<void>((resolve)=>{
-            this.scheduleOnce(()=>{
-                resolve()
-            },1);
-        })
+        if (!this.isStunned) {
+            this.monsterAI();
+        }
+        // return new Promise<void>((resolve)=>{
+        //     this.scheduleOnce(()=>{
+        //         resolve()
+        //     },1);
+        // })
     }
+
+
 
     beenSelected(){
         this._mianSecene.setSelectedMonster(this._monsterID);
@@ -181,13 +188,22 @@ export class monster extends creature {
             if (this._monsterID == monID) {
                 let dis = this.getDistanceFormHero();
                 if (skill.range >= dis) {
-                    this.dealWithDamage(skill.effNum);
+                    if (skill.kType == skillType.ATTACK) {
+                        this.dealWithDamage(skill.effNum);
+                    }else if (skill.kType == skillType.STUN) {
+                        this.beenStunnedFun(skill.effNum);
+                    }
                 } else {
                     //攻击范围外 处理未击中效果
                     this.missAnim();
                 }
             }
         }
+    }
+
+    beenStunnedFun(num:number){
+        super.beenStunnedFun(num);
+        this.beenStunnedRound = this._mianSecene.getMonsterRound();
     }
 
     getDistanceFormHero():number{

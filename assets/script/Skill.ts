@@ -57,7 +57,10 @@ export class Skill extends Component {
                 break;
             case skillType.MOVE:
                 _patch = 'move';
-                break;      
+                break;
+            case skillType.STUN:
+                _patch = 'stun';
+                break;        
             default:
                 _patch = 'atk';
                 break;

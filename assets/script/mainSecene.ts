@@ -29,7 +29,8 @@ export class mainSecene extends Component {
     private _monstersArray:monster[]=[];
     private _myHero:hero = null;
     private _monsterJson:object = null;
-    public heroRound:number = 1;
+    private heroRound:number = 1;
+    private monsterRound:number = 1;
     private _curSelectMonster:number = 0;
     private _monPositionArr:Vec3[]=[];
     
@@ -40,6 +41,10 @@ export class mainSecene extends Component {
     start() {
         this.createMyHero();
         this.createMonsters(2);
+    }
+
+    getMonsterRound():number{
+        return this.monsterRound;
     }
 
     heroMoveFinish(){
@@ -168,6 +173,7 @@ export class mainSecene extends Component {
     }
 
     async monsterRoundStart(){
+        this.monsterRound++;
         let speedArray:mAndvObj[]=[];
         this._monstersArray.forEach((_mon)=>{
             let _mandv:mAndvObj={
@@ -177,7 +183,7 @@ export class mainSecene extends Component {
             speedArray.push(_mandv);
         })
         speedArray.sort(this.compareMtS("value"));
-
+        //按照monster的 speed值由大到小的顺序 依次执行monster动作
         let mrArray=[]
         for (let i = 0; i < speedArray.length; i++) {
             mrArray.push(this.monsRound(i,speedArray[i].monId));

@@ -224,7 +224,10 @@ export class deckConteroler extends Component {
                 break;  
             case skillType.MOVE:
                 this._mHero.doHeroMove(skill.effNum);
-                break;   
+                break;
+            case skillType.STUN:
+                this._mHero.stunMonster(skill);
+                break;    
             default:
                 
                 break;

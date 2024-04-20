@@ -36,6 +36,7 @@ export class card extends Component {
     private _startSibling:number = 0;
     private _isCanTouch:boolean = false;
     private _skillRange:number = 0;
+    private _isStable:boolean = false;
 
     public setTouchable(isCanTouch:boolean): void {
         if (isCanTouch) {
