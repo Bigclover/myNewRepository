@@ -1,52 +1,57 @@
-import { _decorator, Component, Label, Material, Node, resources, Sprite, SpriteFrame } from 'cc';
-import { skillType } from './gameConfing';
+import { _decorator, Component, Label, Node, resources, Sprite, SpriteFrame } from 'cc';
+import { effectObj, skillType } from './gameConfing';
 const { ccclass, property } = _decorator;
 
-@ccclass('Skill')
-export class Skill extends Component {
+@ccclass('stateEffect')
+export class stateEffect extends Component {
+    @property(Sprite)
+    imgSprite:Sprite = null;
+
     @property(Label)
     numLabel:Label = null;
 
-    @property(Sprite)
-    typeSprite:Sprite = null;
+    private stateType:skillType;
+    private stateNum:number = 0;
 
-    public skillType:skillType=0;
-    public skillNum:number = 0;
-
-    init(type:skillType,num:number){
-        this.skillType = type;
-        this.skillNum = num;
+    init(_ktype:skillType,effNum:number){
+        this.stateType = _ktype;
+        this.stateNum = effNum;
     }
 
-    setSkillNum(num:number){
-        this.skillNum = num;
-        let numStr:string =''
-        if (this.skillNum >= 0) {
-            numStr = this.skillNum.toString();
-        } else {
-            numStr = ':'+this.skillNum.toString();
-        }
-        this.numLabel.string = numStr;
-    }
-
-    setMaterialFun(mData:Material){
-        this.numLabel.customMaterial = mData;
-        this.typeSprite.customMaterial = mData;
-    }
-    
     start() {
+        this.setNumLabel();
+        let typePatch:string = this.getImgPatchByType(this.stateType);
+        resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
+            this.imgSprite.spriteFrame = spriteFrame;
+        });
+    }
+
+    getStateType():skillType{
+        return this.stateType;
+    }
+
+    setNumLabel(){
         let numStr:string =''
-        if (this.skillNum >= 0) {
-            numStr = this.skillNum.toString();
+        if (this.stateNum >= 0) {
+            numStr = this.stateNum.toString();
         } else {
-            numStr = ':'+this.skillNum.toString();
+            numStr = ':'+this.stateNum.toString();
         }
         this.numLabel.string = numStr;
-        let typePatch:string = this.getImgPatchByType(this.skillType);
-        resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
-            this.typeSprite.spriteFrame = spriteFrame;
-            // this.typeSprite.spriteFrame.addRef();
-        });
+    }
+
+    updateStateNum(num:number){
+        this.stateNum = num;
+        if (this.stateNum <= 0) {
+            this.cancelStateEffect();
+        } else {
+            this.setNumLabel();
+        }
+    }
+
+    cancelStateEffect(){
+        this.node.removeFromParent();
+        this.node.destroy();
     }
 
     getImgPatchByType(type:number):string{

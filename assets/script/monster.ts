@@ -90,8 +90,13 @@ export class monster extends creature {
         if (this.isStunned) {
             this.breakStunFun(this._mianSecene.getMonsterRound());
         }
-        this._crCurDef = 0;
-        this.refreshDefUI();
+        
+        if (this._crCurDef > 0) {
+            this._crCurDef = 0;
+            // 每回合开始清除 防御 状态显示
+            this.setStateEffectTag(skillType.DEFEND,this._crCurDef);
+        }
+
         if (!this.isStunned) {
             this.monsterAI();
         }
@@ -147,7 +152,7 @@ export class monster extends creature {
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:
-                this.addDefFun(skill.initNum);
+                this.addDefFun(skill);
                 // animTime = this.fightAnim.getState('shield').duration
                 break;
             case 2:
@@ -191,7 +196,7 @@ export class monster extends creature {
                     if (skill.kType == skillType.ATTACK) {
                         this.dealWithDamage(skill.effNum);
                     }else if (skill.kType == skillType.STUN) {
-                        this.beenStunnedFun(skill.effNum);
+                        this.beenStunnedFun(skill);
                     }
                 } else {
                     //攻击范围外 处理未击中效果
@@ -201,8 +206,8 @@ export class monster extends creature {
         }
     }
 
-    beenStunnedFun(num:number){
-        super.beenStunnedFun(num);
+    beenStunnedFun(skill:effectObj){
+        super.beenStunnedFun(skill);
         this.beenStunnedRound = this._mianSecene.getMonsterRound();
     }
 

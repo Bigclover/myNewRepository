@@ -1,6 +1,8 @@
-import { _decorator, Animation, AnimationState, Component, instantiate, Label, Node, Prefab, ProgressBar, tween } from 'cc';
+import { _decorator, Animation, AnimationState, Component, instantiate, Label, Layout, Node, Prefab, ProgressBar, tween } from 'cc';
 import { flowNumber } from './flowNumber';
 import { AudioMgr } from '../tool/AudioMgr';
+import { effectObj, skillType } from './gameConfing';
+import { stateEffect } from './stateEffect';
 
 
 const { ccclass, property } = _decorator;
@@ -15,12 +17,6 @@ export class creature extends Component {
     @property(Label)
     hpLabel:Label = null;
 
-    @property(Node)
-    defNode:Node= null;
-
-    @property(Node)
-    effAtkNode:Node= null;
-
     @property(Animation)
     fightAnim:Animation = null;
 
@@ -30,8 +26,11 @@ export class creature extends Component {
     @property(Prefab)
     flowNum:Prefab= null;
 
-    @property(Node)
-    stunNode:Node = null;
+    @property(Layout)
+    effLayout:Layout = null;
+
+    @property({type:Prefab})
+    statePrefab:Prefab = null;
 
     // protected whoAmI:string = '';
     protected crMaxHp:number=0;
@@ -40,11 +39,12 @@ export class creature extends Component {
     protected _hpChangeArr:number[]=[];
     protected _hpIsChanging:boolean = false;
     protected crSpeed:number = 0;
-    protected crStrength:number = 0; //影响卡片or技能 攻击力
+    protected crStrength:number = 0; //影响近战攻击力
     protected stand:number =0;
     protected isStunned:boolean = false;
     protected stunnedTurns:number = 0;
     protected beenStunnedRound:number = 0;
+    protected stateEffectArray:stateEffect[]=[];
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
@@ -62,17 +62,18 @@ export class creature extends Component {
         this.stand = num;
     }
 
-    beenStunnedFun(num:number){
+    beenStunnedFun(skill:effectObj){
         this.isStunned = true;
-        this.stunnedTurns = num;
-        this.stunNode.active = true;
+        this.stunnedTurns = skill.effNum;
+        this.setStateEffectTag(skill.kType,this.stunnedTurns);
     }
 
     breakStunFun(curRound:number){
         let passRound = curRound - this.beenStunnedRound;
         if (passRound > this.stunnedTurns) {
             this.isStunned = false;
-            this.stunNode.active = false;
+            this.stunnedTurns = 0;
+            this.setStateEffectTag(skillType.STUN,this.stunnedTurns);
         }
     }
 
@@ -86,25 +87,26 @@ export class creature extends Component {
         this._crCurDef -= damageNum;
         if (this._crCurDef < 0) {
             this.changeHpFun(this._crCurDef);
+            this._crCurDef = 0; 
         }
-        this.refreshDefUI();
+        this.setStateEffectTag(skillType.DEFEND,this._crCurDef);
         this.playBeenHittedAnim();
     }
 
-    getEffectAtk(){
-        return this.crStrength;
+    // getEffectAtk(){
+    //     return this.crStrength;
+    // }
+
+    addEffectAtk(skill:effectObj){
+        this.crStrength += skill.effNum;
+        this.setStateEffectTag(skill.kType,this.crStrength);
     }
 
-    addEffectAtk(eff:number){
-        this.crStrength += eff;
-        this.refreshEffeAtkUI();
-    }
-
-    addDefFun(defNum:number){
+    addDefFun(skill:effectObj){
         AudioMgr.inst.playEffect('audio','shield');
         this.fightAnim.play('shield');
-        this._crCurDef += defNum;
-        this.refreshDefUI();
+        this._crCurDef += skill.effNum;
+        this.setStateEffectTag(skill.kType,this._crCurDef);
     }
 
     addHpFun(hpNum:number){
@@ -128,26 +130,30 @@ export class creature extends Component {
         this.node.addChild(_flowNum);
     }
 
-    refreshDefUI(){
-        if (this._crCurDef>0) {
-            this.defNode.active = true;
-            let _label = this.defNode.getChildByName('num').getComponent(Label);
-            _label.string = this._crCurDef.toString();
-        }else{
-            this._crCurDef = 0;
-            this.defNode.active = false;
-        }
+    setStateEffectTag(_ktype:skillType,num:number){
+            let typeArr:skillType[]=[];
+            this.stateEffectArray.forEach((_state)=>{
+                typeArr.push(_state.getStateType());
+            })
+            let _index = typeArr.indexOf(_ktype);
+            if (_index !== -1) {
+                this.stateEffectArray[_index].updateStateNum(num);
+                if (num <= 0) {
+                   this.removeItemFormArray<stateEffect>(this.stateEffectArray[_index],this.stateEffectArray); 
+                }
+            } else {
+                if (num > 0) {
+                    this.addStateEffectTag(_ktype,num);
+                }
+            }
     }
 
-    refreshEffeAtkUI(){
-        if (this.crStrength>0) {
-            this.effAtkNode.active = true;
-            let _label = this.effAtkNode.getChildByName('num').getComponent(Label);
-            _label.string = this.crStrength.toString();
-        }else{
-            this.crStrength = 0;
-            this.effAtkNode.active = false;
-        }
+    addStateEffectTag(_ktype:skillType,effNum:number){
+        let _state = instantiate(this.statePrefab);
+        let _stateEffect = _state.getComponent(stateEffect);
+        _stateEffect.init(_ktype,effNum);
+        this.effLayout.node.addChild(_state);
+        this.stateEffectArray.push(_stateEffect);
     }
     
     changeHpFun(changeNum:number):void{
@@ -194,6 +200,13 @@ export class creature extends Component {
             this.missNode.active = false;
         })
         .start()
+    }
+
+    removeItemFormArray<T>(item:T,arr:T[]){
+        let index = arr.indexOf(item);
+        if (index > -1) {
+            arr.splice(index,1);
+        }
     }
 }
 

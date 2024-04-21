@@ -1,5 +1,5 @@
 import { _decorator, Component, EventTouch, instantiate, Label, Layout, Node, Prefab, Rect, Sprite, tween, UITransform, Vec3 } from 'cc';
-import { deckObj, effectObj} from './gameConfing';
+import { cardType, deckObj, effectObj} from './gameConfing';
 import { deckConteroler } from './deckConteroler';
 import { skillType } from './gameConfing';
 import AssetsManger from '../assetsManager/AssetsManger';
@@ -23,7 +23,7 @@ export class card extends Component {
     @property({type:Prefab})
     skillPrefab:Prefab = null;
 
-
+    cardType:cardType;
     cardID:number = 0;
     cardName:string = '';
     cardSkills:effectObj[]=[];
@@ -37,6 +37,7 @@ export class card extends Component {
     private _isCanTouch:boolean = false;
     private _skillRange:number = 0;
     private _isStable:boolean = false;
+    private _consumption:number = 0;
 
     public setTouchable(isCanTouch:boolean): void {
         if (isCanTouch) {
@@ -54,9 +55,12 @@ export class card extends Component {
     }
 
     init(id:number,_deckObj:deckObj,mc:deckConteroler){
+        this.cardType = _deckObj.cardType;
         this.cardID = id;
         this.cardName = _deckObj.cardName;
         this.isOneoff = _deckObj.isOneoff;
+        this._isStable = _deckObj.isStable;
+        this._consumption = _deckObj.consumption;
         this.cardSkills = [..._deckObj.baseEffect];
         this.cardDesc = _deckObj.descr;
         this._deckControler = mc;
@@ -68,13 +72,16 @@ export class card extends Component {
 
     start() {
         this.nameLabel.string = this.cardName //+"ID:"+this.cardID;
+        if (this._isStable) {
+            this.nameLabel.string = this.cardName+'(固定)';
+        }
         this.cardSkills.forEach((skill)=>{
             let _skill = instantiate(this.skillPrefab);
             _skill.getComponent(Skill).init(skill.kType,skill.effNum);
             this.skillPanel.addChild(_skill);
             if (skill.kType == skillType.ATTACK) {
                 this._skillRange = skill.range;
-                this.nameLabel.string = this.cardName+'('+this._skillRange+')';
+                this.nameLabel.string = this.cardName+'(R:'+this._skillRange+')';
             }
         })
 
@@ -99,6 +106,14 @@ export class card extends Component {
         if (_rect1) {
             this.releaseRect = _rect1.getComponent(UITransform).getBoundingBoxToWorld()
         }
+    }
+
+    getCardConsumption():number{
+        return this._consumption;
+    }
+
+    getCardStableTag():boolean{
+        return this._isStable;
     }
 
     removeFromBattle(){
@@ -264,7 +279,7 @@ export class card extends Component {
     moveUpAnim(){
         return new Promise<void>((resolve)=>{
             tween(this.node)
-            .by(0.3,{position:new Vec3(0,50,0)})
+            .by(0.25,{position:new Vec3(0,50,0)})
             .call(()=>{
                 resolve();
             })

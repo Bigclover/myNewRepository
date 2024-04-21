@@ -1,3 +1,14 @@
+export enum cardType {
+  CLOSE_ATK = 0,
+  DISTANCE_ATK = 1,
+  DEFEND = 2,
+  REVIVE = 3,
+  DRAWCARD = 4,
+  EFFECT = 5,
+  MOVE = 6,
+  ENERGY = 7
+}
+
 export enum skillType {
     ATTACK = 0,
     DEFEND = 1,
@@ -5,7 +16,8 @@ export enum skillType {
     DRAWCARD = 3,
     EFFECT_ATK = 4,
     MOVE = 5,
-    STUN = 6
+    STUN = 6,
+    LOAD = 7
 }
 
 export interface mAndvObj{
@@ -14,15 +26,18 @@ export interface mAndvObj{
 }
 
 export interface effectObj{
-    kType:number,
+    kType:skillType,
     initNum:number,
     effNum:number,
     range:number
 }
 
 export interface deckObj{
+    cardType:cardType,
     cardName:string,
     isOneoff:boolean,
+    isStable:boolean,
+    consumption:number,
     baseEffect:effectObj[],
     descr:string
 }

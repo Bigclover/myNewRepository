@@ -2,7 +2,7 @@ import { _decorator, Component, instantiate, Label, Layout, Node, Prefab } from 
 import { card } from './card';
 import  deckData from './deckData';
 import { hero } from './hero';
-import { skillType, deckObj, effectObj } from './gameConfing';
+import { skillType, deckObj, effectObj, cardType } from './gameConfing';
 import { cardsPanel } from './cardsPanel';
 import { AudioMgr } from '../tool/AudioMgr';
 
@@ -54,9 +54,10 @@ export class deckConteroler extends Component {
         this.node.addChild(this.dpp)
     }
 
-    endTurnButton(){
+    async endTurnButton(){
         this.butNode.active = false;
-        this.checkRemianHandCards(this._mHero.remainCardsAbility);
+        await this.checkRemianHandCards(this._mHero.remainCardsAbility);
+        this._mHero.heroEndTurn();
     }
 
     showTurnButton(){
@@ -64,18 +65,35 @@ export class deckConteroler extends Component {
     }
 
     checkRemianHandCards(_num:number){
-        let _len:number = this._handCardsArray.length
-        if(_len > _num){
-            let surplus = _len - _num;
-            for (let i = 0; i < surplus; i++) {
-                let _card:card = this.randomArray<card>(this._handCardsArray);
-                this.receiveCard(_card,false);
+        return new Promise<void>((resolve)=>{
+            let _len:number = this._handCardsArray.length
+            if(_len > _num){
+                let surplus = _len - _num;
+                for (let i = 0; i < surplus; i++) {
+                    let _card:card = this.randomArray<card>(this._handCardsArray);
+                    this.receiveCard(_card,false);
+                }
+                this.scheduleOnce(()=>{
+                    resolve();
+                },0.75)
+            }else{
+                resolve();
             }
-            this.scheduleOnce(()=>{
-                this._mHero.heroEndTurn();
-            },0.8)
-        }else{
-            this._mHero.heroEndTurn();
+        })
+    }
+
+    async drawStableCard(){
+        for await (const _card of this._allCardsArray) {
+            if (_card.getCardStableTag()) {
+                this.removeItemFormArray<card>(_card,this._allCardsArray);
+                this.leftNumLabel.string = this._allCardsArray.length.toString();
+                AudioMgr.inst.playEffect('audio','card');
+                await _card.moveToHandAnim();
+                _card.node.parent = this.cardLayout.node;
+                this._handCardsArray.push(_card);
+                _card.setTouchable(true);
+                this.refreshCardsArrangement();
+            }
         }
     }
 
@@ -168,13 +186,24 @@ export class deckConteroler extends Component {
         })
      }
 
+    processCard(_card:card){
+        switch (_card.cardType) {
+            case cardType.DISTANCE_ATK:
+                
+                break;
+        
+            default:
+                break;
+        }
+        _card.cardSkills.forEach((_skill)=>{
+            this.enforceCardBySkill(_skill);
+        })
+    }
+
     async receiveCard(card:card,isEnforce:boolean = true){
         this.removeItemFormArray<card>(card,this._handCardsArray);
         if (isEnforce) {
-            card.cardSkills.forEach((_skill)=>{
-                this.enforceCardByType(_skill);
-            })
-            
+            this.processCard(card);
             if (card.isOneoff) {
                 //删除一次性效果卡牌不进入discard
                 await card.removeFromBattle();
@@ -190,9 +219,10 @@ export class deckConteroler extends Component {
         this._discardArray.push(card);
         this.dpp.getComponent(cardsPanel).addOneCard(card);
         this.showDiscardNum();
-
         this.refreshCardsArrangement();
     }
+
+
 
     showDiscardNum(){
         //弃牌显示
@@ -205,13 +235,13 @@ export class deckConteroler extends Component {
         this.dpp.active = true;
     }
 
-    enforceCardByType(skill:effectObj){
+    enforceCardBySkill(skill:effectObj){
         switch (skill.kType) {
             case skillType.ATTACK:
                 this._mHero.doHeroAtk(skill);
                 break;
             case skillType.DEFEND:
-                this._mHero.addDefFun(skill.effNum);
+                this._mHero.addDefFun(skill);
                 break;
             case skillType.REVIVE:
                 this._mHero.addHpFun(skill.effNum);
@@ -220,14 +250,17 @@ export class deckConteroler extends Component {
                 this._mHero.drawCardsByCard(skill.effNum);
                 break;
             case skillType.EFFECT_ATK:
-                this._mHero.addEffectAtk(skill.effNum);
+                this._mHero.addEffectAtk(skill);
                 break;  
             case skillType.MOVE:
                 this._mHero.doHeroMove(skill.effNum);
                 break;
             case skillType.STUN:
                 this._mHero.stunMonster(skill);
-                break;    
+                break;
+            case skillType.LOAD:
+                this._mHero.loadGun(skill);
+                break;      
             default:
                 
                 break;

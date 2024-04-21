@@ -1,4 +1,4 @@
-import { Prefab, _decorator, director, find, instantiate} from 'cc';
+import { Label, Node, Prefab, _decorator, find, instantiate} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { deckConteroler } from './deckConteroler';
@@ -17,6 +17,8 @@ export class hero extends creature {
     public remainCardsAbility:number = 2;//hero留牌数量
     
     private _myDeckCont:deckConteroler = null;
+    private _heroRounds:number = 0;
+    private _loadNum:number = 0;
 
     protected onEnable(): void {
         ListenerManager.on('hitHero',this.heroBeenHit,this);
@@ -43,26 +45,33 @@ export class hero extends creature {
     }
 
     roundStart(round:number){
+        this._heroRounds = round;
         //hero round start 清除单轮效果
         if (this._crCurDef > 0) {
             this._crCurDef = 0;
-            this.refreshDefUI();
+            // 每回合开始清除 防御 状态显示
+            this.setStateEffectTag(skillType.DEFEND,this._crCurDef);
         }
         if (this.crStrength > 0) {
             this.crStrength=0;
-            this.refreshEffeAtkUI();
+           // 每回合开始清除 力量 状态显示
+           this.setStateEffectTag(skillType.EFFECT_ATK,this.crStrength);
             this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
         }
 
         this.heroDrawCards();
     }
 
-    addEffectAtk(eff:number){
-        super.addEffectAtk(eff);
+    addEffectAtk(skill:effectObj){
+        super.addEffectAtk(skill);
         this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
     }
 
     async heroDrawCards(){
+        //第一轮抽 固定属性的card
+        if (this._heroRounds < 2) {
+            await this._myDeckCont.drawStableCard();
+        }
         await this._myDeckCont.drawCardsFromAll(this.drawCardsAbility);
         this._myDeckCont.showTurnButton();
     }
@@ -89,6 +98,11 @@ export class hero extends creature {
             }
         }
         this._mianSecene.heroMoveFinish();
+    }
+
+    loadGun(skill:effectObj){
+        this._loadNum += skill.effNum;
+        this.setStateEffectTag(skill.kType,this._loadNum);
     }
 
     stunMonster(skill:effectObj){
