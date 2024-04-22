@@ -3,7 +3,9 @@ import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { deckConteroler } from './deckConteroler';
 import { mainSecene } from './mainSecene';
-import { effectObj, skillType } from './gameConfing';
+import { cardType, effectObj, skillType } from './gameConfing';
+import { AudioMgr } from '../tool/AudioMgr';
+import { card } from './card';
 
 const { ccclass, property } = _decorator;
 
@@ -54,9 +56,9 @@ export class hero extends creature {
         }
         if (this.crStrength > 0) {
             this.crStrength=0;
-           // 每回合开始清除 力量 状态显示
-           this.setStateEffectTag(skillType.EFFECT_ATK,this.crStrength);
-            this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
+            // 每回合开始清除 力量 状态显示
+            this.setStateEffectTag(skillType.EFFECT_ATK,this.crStrength);
+            this._myDeckCont.adjustAllCardsByHero(cardType.CLOSE_ATK,skillType.ATTACK,this.crStrength);
         }
 
         this.heroDrawCards();
@@ -64,7 +66,9 @@ export class hero extends creature {
 
     addEffectAtk(skill:effectObj){
         super.addEffectAtk(skill);
-        this._myDeckCont.adjustAllCardsByHero(skillType.ATTACK,this.crStrength);
+        if (this.crStrength > 0) {
+            this._myDeckCont.adjustAllCardsByHero(cardType.CLOSE_ATK,skillType.ATTACK,this.crStrength);
+        }
     }
 
     async heroDrawCards(){
@@ -100,9 +104,22 @@ export class hero extends creature {
         this._mianSecene.heroMoveFinish();
     }
 
+    useAmmo(consumption:number){
+        this._loadNum -= consumption;
+        if (this._loadNum <= 0) {
+            this._loadNum = 0;
+            this._myDeckCont.adjustAllCardsByHero(cardType.DISTANCE_ATK,skillType.ATTACK,0,true);
+        }
+        this.setStateEffectTag(skillType.LOAD,this._loadNum);
+    }
+
     loadGun(skill:effectObj){
         this._loadNum += skill.effNum;
-        this.setStateEffectTag(skill.kType,this._loadNum);
+        if (this._loadNum > 0) {
+            AudioMgr.inst.playEffect('audio','load');
+            this.setStateEffectTag(skill.kType,this._loadNum);
+            this._myDeckCont.adjustAllCardsByHero(cardType.DISTANCE_ATK,skillType.ATTACK,0);
+        }
     }
 
     stunMonster(skill:effectObj){
@@ -110,11 +127,15 @@ export class hero extends creature {
         ListenerManager.dispatch('hitMonster',monsterId,skill);
     }
 
-    doHeroAtk(skill:effectObj){
-        super.doAtkFun();
+    doHeroAtk(_card:card,skill:effectObj){
+        super.doAtkFun(_card.cardType);
         this.fightAnim.play('atk');
         let monsterId:number = this._mianSecene.getSelectedMonster();
         ListenerManager.dispatch('hitMonster',monsterId,skill);
+        
+        if (_card.cardType = cardType.DISTANCE_ATK) {
+            this.useAmmo(_card.getCardConsumption());
+        }
     }
 
     creatorDeckControler(){

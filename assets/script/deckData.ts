@@ -18,9 +18,9 @@ export default class deckData{
     [
     // {cardType:cardType.CLOSE_ATK,cardName:'剑击',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.ATTACK,initNum:10,effNum:10,range:1}],descr:''},
     // {cardType:cardType.CLOSE_ATK,cardName:'剑挡',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.ATTACK,initNum:5,effNum:5,range:1},{kType:skillType.DEFEND,initNum:5,effNum:5,range:0}],descr:''},
-    {cardType:cardType.DISTANCE_ATK,cardName:'手枪',isOneoff:false,isStable:false,consumption:1,baseEffect:[{kType:skillType.ATTACK,initNum:20,effNum:0,range:10}],descr:''},
-    {cardType:cardType.DISTANCE_ATK,cardName:'手枪',isOneoff:false,isStable:false,consumption:1,baseEffect:[{kType:skillType.ATTACK,initNum:20,effNum:0,range:10}],descr:''},
-    {cardType:cardType.DISTANCE_ATK,cardName:'手枪',isOneoff:false,isStable:false,consumption:1,baseEffect:[{kType:skillType.ATTACK,initNum:20,effNum:0,range:10}],descr:''},
+    {cardType:cardType.DISTANCE_ATK,cardName:'手枪',isOneoff:false,isStable:false,consumption:1,baseEffect:[{kType:skillType.ATTACK,initNum:20,effNum:0,range:10}],descr:'载弹伤害:'},
+    {cardType:cardType.DISTANCE_ATK,cardName:'手枪',isOneoff:false,isStable:false,consumption:1,baseEffect:[{kType:skillType.ATTACK,initNum:20,effNum:0,range:10}],descr:'载弹伤害:'},
+    {cardType:cardType.DISTANCE_ATK,cardName:'手枪',isOneoff:false,isStable:false,consumption:1,baseEffect:[{kType:skillType.ATTACK,initNum:20,effNum:0,range:10}],descr:'载弹伤害:'},
     {cardType:cardType.ENERGY,cardName:'装弹',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.LOAD,initNum:1,effNum:1,range:0}],descr:''},
     {cardType:cardType.ENERGY,cardName:'装弹',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.LOAD,initNum:1,effNum:1,range:0}],descr:''},
     {cardType:cardType.ENERGY,cardName:'装弹',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.LOAD,initNum:1,effNum:1,range:0}],descr:''},
@@ -33,8 +33,8 @@ export default class deckData{
     // {cardType:cardType.EFFECT,cardName:'神力丸',isOneoff:true,isStable:false,consumption:0,baseEffect:[{kType:skillType.EFFECT_ATK,initNum:20,effNum:20,range:0}],descr:''},
     {cardType:cardType.DRAWCARD,cardName:'神抽',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.DRAWCARD,initNum:1,effNum:1,range:0}],descr:''},
     {cardType:cardType.MOVE,cardName:'后撤',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:-5,effNum:-5,range:0}],descr:''},
-    // {cardType:cardType.MOVE,cardName:'前进',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:5,effNum:5,range:0}],descr:''},
-    {cardType:cardType.MOVE,cardName:'冲锋',isOneoff:false,isStable:true,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:10,effNum:10,range:0},{kType:skillType.STUN,initNum:1,effNum:1,range:1}],descr:''}          
+    {cardType:cardType.MOVE,cardName:'前进',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:5,effNum:5,range:0}],descr:''},
+    // {cardType:cardType.MOVE,cardName:'冲锋',isOneoff:false,isStable:true,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:10,effNum:10,range:0},{kType:skillType.STUN,initNum:1,effNum:1,range:1}],descr:''}          
     ];
 
     public getDeckData():deckObj[]{

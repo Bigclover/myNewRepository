@@ -23,6 +23,9 @@ export class card extends Component {
     @property({type:Prefab})
     skillPrefab:Prefab = null;
 
+    @property(Label)
+    descLabel:Label = null;
+
     cardType:cardType;
     cardID:number = 0;
     cardName:string = '';
@@ -77,11 +80,20 @@ export class card extends Component {
         }
         this.cardSkills.forEach((skill)=>{
             let _skill = instantiate(this.skillPrefab);
+            // if (this.cardType == cardType.DISTANCE_ATK && skill.kType == skillType.ATTACK) {
+            //     _skill.getComponent(Skill).init(skill.kType,skill.initNum);
+            // } else {
+            //     _skill.getComponent(Skill).init(skill.kType,skill.effNum);
+            // }
             _skill.getComponent(Skill).init(skill.kType,skill.effNum);
             this.skillPanel.addChild(_skill);
             if (skill.kType == skillType.ATTACK) {
                 this._skillRange = skill.range;
                 this.nameLabel.string = this.cardName+'(R:'+this._skillRange+')';
+
+                if (this.cardType == cardType.DISTANCE_ATK) {
+                    this.descLabel.string = this.cardDesc+skill.initNum;
+                }
             }
         })
 
@@ -139,10 +151,13 @@ export class card extends Component {
         
     }
 
-    adjustCardByHero(_type:skillType,effectNum:number){
+    adjustCardByHero(_type:skillType,effectNum:number,mute:boolean){
         this.cardSkills.forEach((skill)=>{
             if (skill.kType == _type) {
                 skill.effNum = skill.initNum + effectNum;
+                if (this.cardType == cardType.DISTANCE_ATK && mute) {
+                    skill.effNum = 0;
+                }
                 this.adjustSkillDisplay(_type,skill.effNum);
             }
         })

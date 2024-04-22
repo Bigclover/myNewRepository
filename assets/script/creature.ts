@@ -1,7 +1,7 @@
 import { _decorator, Animation, AnimationState, Component, instantiate, Label, Layout, Node, Prefab, ProgressBar, tween } from 'cc';
 import { flowNumber } from './flowNumber';
 import { AudioMgr } from '../tool/AudioMgr';
-import { effectObj, skillType } from './gameConfing';
+import { cardType, effectObj, skillType } from './gameConfing';
 import { stateEffect } from './stateEffect';
 
 
@@ -99,7 +99,9 @@ export class creature extends Component {
 
     addEffectAtk(skill:effectObj){
         this.crStrength += skill.effNum;
-        this.setStateEffectTag(skill.kType,this.crStrength);
+        if (this.crStrength > 0) {
+            this.setStateEffectTag(skill.kType,this.crStrength);
+        }
     }
 
     addDefFun(skill:effectObj){
@@ -116,8 +118,12 @@ export class creature extends Component {
         }
     }
 
-    doAtkFun(){
-        AudioMgr.inst.playEffect('audio','atk');
+    doAtkFun(_cardType:cardType){
+        if (_cardType == cardType.CLOSE_ATK) {
+            AudioMgr.inst.playEffect('audio','atk');
+        }else if (_cardType == cardType.DISTANCE_ATK) {
+            AudioMgr.inst.playEffect('audio','shoot');
+        }
     }
 
     moveFun(){

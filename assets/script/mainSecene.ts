@@ -41,6 +41,7 @@ export class mainSecene extends Component {
     start() {
         this.createMyHero();
         this.createMonsters(2);
+        this.getClosestMonsterSelected();
     }
 
     getMonsterRound():number{
@@ -80,6 +81,11 @@ export class mainSecene extends Component {
                 }
             })
         }
+    }
+
+    getClosestMonsterSelected(){
+        let mid = this.getClosestMonster();
+        this.setSelectedMonster(mid)
     }
 
     getClosestMonster():number{
@@ -151,7 +157,9 @@ export class mainSecene extends Component {
     }
 
     monsterActFinished(){
-        this.heroRoundStart();
+        this.scheduleOnce(()=>{
+            this.heroRoundStart();
+        },1);
     }
 
     heroRoundStart(){

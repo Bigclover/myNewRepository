@@ -2,7 +2,7 @@ import { Label, Node, Vec3, _decorator, tween} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { mainSecene } from './mainSecene';
-import { effectObj, monInfo, skillType } from './gameConfing';
+import { cardType, effectObj, monInfo, skillType } from './gameConfing';
 
 const { ccclass, property } = _decorator;
 
@@ -45,10 +45,6 @@ export class monster extends creature {
 
     start() {
         super.start();
-        // 'ID'+this._monsterID +this._monsterName+'speed:'+this.crSpeed;
-        if (this._monsterID == 0) {
-            this.setSelectTag(true);
-        }
         this.showDistance();
     }
 
@@ -90,7 +86,7 @@ export class monster extends creature {
         if (this.isStunned) {
             this.breakStunFun(this._mianSecene.getMonsterRound());
         }
-        
+
         if (this._crCurDef > 0) {
             this._crCurDef = 0;
             // 每回合开始清除 防御 状态显示
@@ -121,8 +117,8 @@ export class monster extends creature {
         return this._monsterID;
     }
 
-    monsterAtkFun(_skill:effectObj){
-        super.doAtkFun();
+    monsterAtkFun(type:cardType,_skill:effectObj){
+        super.doAtkFun(type);
         this.fightAnim.play('atkback');
         ListenerManager.dispatch('hitHero',this._monsterID,_skill);
     }
@@ -132,10 +128,10 @@ export class monster extends creature {
             let dis = this.getDistanceFormHero();
             if (range < dis) {
                 this.doMonsterMove(this._mMoveAbility);
-                this.scheduleOnce(()=>{ resolve() },0.5);
+                this.scheduleOnce(()=>{ resolve() },0.3);
             }else if (range/2 > dis) {
                 this.doMonsterMove(-this._mMoveAbility);
-                this.scheduleOnce(()=>{ resolve() },0.5);
+                this.scheduleOnce(()=>{ resolve() },0.3);
             }else{
                 resolve();
             }
@@ -144,11 +140,17 @@ export class monster extends creature {
 
     async monsterAI(){
         let skill:effectObj = this.randomArray<effectObj>(this._skillsArray);
-        console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType);
+        console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType+"num:"+skill.effNum);
         switch (skill.kType) {
             case 0:
                 await this.moveAI(skill.range);
-                this.monsterAtkFun(skill);
+                let type:cardType;
+                if (skill.range > 3) {
+                    type = cardType.DISTANCE_ATK;
+                } else {
+                    type = cardType.CLOSE_ATK;
+                }
+                this.monsterAtkFun(type,skill);
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:

@@ -143,20 +143,26 @@ export class deckConteroler extends Component {
         this._shuffleArray.push(cardCom);
     }
 
-    adjustAllCardsByHero(_type:skillType,effectNum:number){
+    adjustAllCardsByHero(_cardType:cardType,_type:skillType,effectNum:number,muteDistanceCard:boolean=false){
         if (this._allCardsArray.length > 0) {
             this._allCardsArray.forEach(_crad => {
-                _crad.adjustCardByHero(_type,effectNum);
+                if (_crad.cardType == _cardType) {
+                    _crad.adjustCardByHero(_type,effectNum,muteDistanceCard);
+                }
             });
         }
         if (this._handCardsArray.length > 0) {
             this._handCardsArray.forEach(_crad => {
-                _crad.adjustCardByHero(_type,effectNum);
+                if (_crad.cardType == _cardType) {
+                    _crad.adjustCardByHero(_type,effectNum,muteDistanceCard);
+                }
             });
         }
         if (this._discardArray.length > 0) {
             this._discardArray.forEach(_crad => {
-                _crad.adjustCardByHero(_type,effectNum);
+                if (_crad.cardType == _cardType) {
+                    _crad.adjustCardByHero(_type,effectNum,muteDistanceCard);
+                }
             });
         }
     }
@@ -186,24 +192,15 @@ export class deckConteroler extends Component {
         })
      }
 
-    processCard(_card:card){
-        switch (_card.cardType) {
-            case cardType.DISTANCE_ATK:
-                
-                break;
-        
-            default:
-                break;
-        }
-        _card.cardSkills.forEach((_skill)=>{
-            this.enforceCardBySkill(_skill);
-        })
-    }
-
     async receiveCard(card:card,isEnforce:boolean = true){
         this.removeItemFormArray<card>(card,this._handCardsArray);
+        if (!card.isOneoff) {
+            this._discardArray.push(card);
+        }
         if (isEnforce) {
-            this.processCard(card);
+            card.cardSkills.forEach((_skill)=>{
+                this.enforceCardBySkill(card,_skill);
+            })
             if (card.isOneoff) {
                 //删除一次性效果卡牌不进入discard
                 await card.removeFromBattle();
@@ -216,7 +213,6 @@ export class deckConteroler extends Component {
         await card.moveToDiscardPile();
         card.node.removeFromParent();
         card.reSetSelf();
-        this._discardArray.push(card);
         this.dpp.getComponent(cardsPanel).addOneCard(card);
         this.showDiscardNum();
         this.refreshCardsArrangement();
@@ -235,10 +231,10 @@ export class deckConteroler extends Component {
         this.dpp.active = true;
     }
 
-    enforceCardBySkill(skill:effectObj){
+    enforceCardBySkill(_card:card,skill:effectObj){
         switch (skill.kType) {
             case skillType.ATTACK:
-                this._mHero.doHeroAtk(skill);
+                this._mHero.doHeroAtk(_card,skill);
                 break;
             case skillType.DEFEND:
                 this._mHero.addDefFun(skill);

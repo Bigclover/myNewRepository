@@ -12,10 +12,12 @@ export class Skill extends Component {
 
     public skillType:skillType=0;
     public skillNum:number = 0;
+    private _mute:boolean = false;
 
-    init(type:skillType,num:number){
+    init(type:skillType,num:number,mute:boolean=false){
         this.skillType = type;
         this.skillNum = num;
+        this._mute = mute;
     }
 
     setSkillNum(num:number){
