@@ -26,7 +26,7 @@ export class card extends Component {
     @property(Label)
     descLabel:Label = null;
 
-    cardType:cardType;
+    private cardType:cardType;
     cardID:number = 0;
     cardName:string = '';
     cardSkills:effectObj[]=[];
@@ -80,11 +80,6 @@ export class card extends Component {
         }
         this.cardSkills.forEach((skill)=>{
             let _skill = instantiate(this.skillPrefab);
-            // if (this.cardType == cardType.DISTANCE_ATK && skill.kType == skillType.ATTACK) {
-            //     _skill.getComponent(Skill).init(skill.kType,skill.initNum);
-            // } else {
-            //     _skill.getComponent(Skill).init(skill.kType,skill.effNum);
-            // }
             _skill.getComponent(Skill).init(skill.kType,skill.effNum);
             this.skillPanel.addChild(_skill);
             if (skill.kType == skillType.ATTACK) {
@@ -118,6 +113,10 @@ export class card extends Component {
         if (_rect1) {
             this.releaseRect = _rect1.getComponent(UITransform).getBoundingBoxToWorld()
         }
+    }
+
+    getCardType():cardType{
+        return this.cardType;
     }
 
     getCardConsumption():number{

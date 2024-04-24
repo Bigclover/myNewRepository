@@ -83,27 +83,27 @@ export class monster extends creature {
     }
 
     roundStart(){
-        if (this.isStunned) {
-            this.breakStunFun(this._mianSecene.getMonsterRound());
-        }
+        let stateDef = this.getStateEffByType(skillType.DEFEND);
+        if (stateDef) {
+            stateDef.checkEffectState(this._mianSecene.getMonsterRound());
+        } 
 
-        if (this._crCurDef > 0) {
-            this._crCurDef = 0;
-            // 每回合开始清除 防御 状态显示
-            this.setStateEffectTag(skillType.DEFEND,this._crCurDef);
-        }
+        this.checkIsCanMove();
 
-        if (!this.isStunned) {
-            this.monsterAI();
+        let stateStun = this.getStateEffByType(skillType.STUN);
+        if (stateStun) {
+           let isStunned = stateStun.checkEffectState(this._mianSecene.getMonsterRound());
+           if (!isStunned) {
+                this.scheduleOnce(()=>{
+                    this.monsterAI();
+                },0.25)
+            }
+        }else{
+            this.scheduleOnce(()=>{
+                this.monsterAI();
+            },0.25)
         }
-        // return new Promise<void>((resolve)=>{
-        //     this.scheduleOnce(()=>{
-        //         resolve()
-        //     },1);
-        // })
     }
-
-
 
     beenSelected(){
         this._mianSecene.setSelectedMonster(this._monsterID);
@@ -128,14 +128,25 @@ export class monster extends creature {
             let dis = this.getDistanceFormHero();
             if (range < dis) {
                 this.doMonsterMove(this._mMoveAbility);
-                this.scheduleOnce(()=>{ resolve() },0.3);
+                this.scheduleOnce(()=>{ resolve() },0.25);
             }else if (range/2 > dis) {
                 this.doMonsterMove(-this._mMoveAbility);
-                this.scheduleOnce(()=>{ resolve() },0.3);
+                this.scheduleOnce(()=>{ resolve() },0.25);
             }else{
                 resolve();
             }
         })
+    }
+
+    checkIsCanMove(){
+        let stateStun = this.getStateEffByType(skillType.TANGLE);
+        if (stateStun) {
+            this.isTangled = true;
+            let isTangled = stateStun.checkEffectState(this._mianSecene.getMonsterRound());
+            if (!isTangled) {
+                this.isTangled = false;
+            }
+        }
     }
 
     async monsterAI(){
@@ -143,7 +154,9 @@ export class monster extends creature {
         console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType+"num:"+skill.effNum);
         switch (skill.kType) {
             case 0:
-                await this.moveAI(skill.range);
+                if (!this.isTangled) {
+                    await this.moveAI(skill.range);
+                }
                 let type:cardType;
                 if (skill.range > 3) {
                     type = cardType.DISTANCE_ATK;
@@ -154,7 +167,7 @@ export class monster extends creature {
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:
-                this.addDefFun(skill);
+                this.addEffectToCreature(skill);
                 // animTime = this.fightAnim.getState('shield').duration
                 break;
             case 2:
@@ -197,8 +210,8 @@ export class monster extends creature {
                 if (skill.range >= dis) {
                     if (skill.kType == skillType.ATTACK) {
                         this.dealWithDamage(skill.effNum);
-                    }else if (skill.kType == skillType.STUN) {
-                        this.beenStunnedFun(skill);
+                    }else{
+                        this.addEffectToCreature(skill);
                     }
                 } else {
                     //攻击范围外 处理未击中效果
@@ -208,9 +221,9 @@ export class monster extends creature {
         }
     }
 
-    beenStunnedFun(skill:effectObj){
-        super.beenStunnedFun(skill);
-        this.beenStunnedRound = this._mianSecene.getMonsterRound();
+    addEffectToCreature(skill:effectObj){
+        let begin = this._mianSecene.getMonsterRound();
+        super.addEffectToCreature(skill,begin);
     }
 
     getDistanceFormHero():number{

@@ -146,21 +146,21 @@ export class deckConteroler extends Component {
     adjustAllCardsByHero(_cardType:cardType,_type:skillType,effectNum:number,muteDistanceCard:boolean=false){
         if (this._allCardsArray.length > 0) {
             this._allCardsArray.forEach(_crad => {
-                if (_crad.cardType == _cardType) {
+                if (_crad.getCardType() == _cardType) {
                     _crad.adjustCardByHero(_type,effectNum,muteDistanceCard);
                 }
             });
         }
         if (this._handCardsArray.length > 0) {
             this._handCardsArray.forEach(_crad => {
-                if (_crad.cardType == _cardType) {
+                if (_crad.getCardType() == _cardType) {
                     _crad.adjustCardByHero(_type,effectNum,muteDistanceCard);
                 }
             });
         }
         if (this._discardArray.length > 0) {
             this._discardArray.forEach(_crad => {
-                if (_crad.cardType == _cardType) {
+                if (_crad.getCardType() == _cardType) {
                     _crad.adjustCardByHero(_type,effectNum,muteDistanceCard);
                 }
             });
@@ -237,7 +237,7 @@ export class deckConteroler extends Component {
                 this._mHero.doHeroAtk(_card,skill);
                 break;
             case skillType.DEFEND:
-                this._mHero.addDefFun(skill);
+                this._mHero.addEffectToCreature(skill);
                 break;
             case skillType.REVIVE:
                 this._mHero.addHpFun(skill.effNum);
@@ -246,17 +246,20 @@ export class deckConteroler extends Component {
                 this._mHero.drawCardsByCard(skill.effNum);
                 break;
             case skillType.EFFECT_ATK:
-                this._mHero.addEffectAtk(skill);
+                this._mHero.addEffectToCreature(skill);
                 break;  
             case skillType.MOVE:
                 this._mHero.doHeroMove(skill.effNum);
                 break;
             case skillType.STUN:
-                this._mHero.stunMonster(skill);
+                this._mHero.addEffectToMonster(skill);
                 break;
             case skillType.LOAD:
-                this._mHero.loadGun(skill);
-                break;      
+                this._mHero.addEffectToCreature(skill);
+                break;
+            case skillType.TANGLE:
+                this._mHero.addEffectToMonster(skill);
+                break;     
             default:
                 
                 break;

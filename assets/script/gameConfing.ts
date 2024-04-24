@@ -1,23 +1,22 @@
 export enum cardType {
   CLOSE_ATK = 0,
   DISTANCE_ATK = 1,
-  DEFEND = 2,
+  EFFECT = 2, 
   REVIVE = 3,
-  DRAWCARD = 4,
-  EFFECT = 5,
-  MOVE = 6,
-  ENERGY = 7
+  DRAWCARD = 4,      //EFFECT_ATK,STUN
+  MOVE = 5,
 }
 
 export enum skillType {
-    ATTACK = 0,
-    DEFEND = 1,
-    REVIVE = 2,
-    DRAWCARD = 3,
-    EFFECT_ATK = 4,
-    MOVE = 5,
-    STUN = 6,
-    LOAD = 7
+    ATTACK = 0, //伤害
+    DEFEND = 1, //防盾
+    REVIVE = 2, //回血
+    DRAWCARD = 3, //抽卡
+    EFFECT_ATK = 4, //加攻
+    MOVE = 5, //位移
+    STUN = 6, //眩晕
+    LOAD = 7, //装弹
+    TANGLE = 8 //缠结
 }
 
 export interface mAndvObj{
@@ -29,7 +28,16 @@ export interface effectObj{
     kType:skillType,
     initNum:number,
     effNum:number,
-    range:number
+    range:number,
+    turns:number  //技能生效回合 -1:代表一直生效
+}
+
+export interface stateObj{
+    sType:skillType,
+    stateNum:number,
+    isEffective:boolean,
+    persistTurns:number,
+    beginRound:number
 }
 
 export interface deckObj{
@@ -54,14 +62,52 @@ export interface monInfo{
 }
 
 export class gameConfing {
-    // private static _instance: WaterPipeConfig = null;
+    private static _instance: gameConfing = null;
 
-    // public static get instance(): WaterPipeConfig {
-    //     if (!this._instance) {
-    //         this._instance = new WaterPipeConfig();
-    //     }
-    //     return this._instance;
-    // }
+    public static get instance(): gameConfing {
+        if (!this._instance) {
+            this._instance = new gameConfing();
+        }
+        return this._instance;
+    }
+
+    getImgPatchByType(type:number):string{
+      let _patch:string = '';
+      switch (type) {
+          case skillType.ATTACK:
+              _patch = 'atk';
+              break;
+          case skillType.DEFEND:
+              _patch = 'def';
+              break;
+          case skillType.REVIVE:
+              _patch = 'life';
+              break;
+          case skillType.DRAWCARD:
+              _patch = 'draw';
+              break;
+          case skillType.EFFECT_ATK:
+              _patch = 'efAtk';
+              break;
+          case skillType.MOVE:
+              _patch = 'move';
+              break;
+          case skillType.STUN:
+              _patch = 'stun';
+              break;
+          case skillType.LOAD:
+              _patch = 'load';
+              break;  
+          case skillType.TANGLE:
+              _patch = 'tangle';
+              break;    
+          default:
+              _patch = 'atk';
+              break;
+      }
+      _patch = `img/skillType/${_patch}/spriteFrame`;
+      return _patch;
+  }
 
     public swapArray<T>( array:T[],index1:number,index2:number) {
       // 如果入参为空，则返回null

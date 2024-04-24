@@ -12,25 +12,29 @@
                 "kType":0,
                 "initNum":5,
                 "effNum":5,
-                "range":8
+                "range":8,
+                "turns":0
             },
             {
                 "kType":0,
                 "initNum":10,
                 "effNum":10,
-                "range":8
+                "range":8,
+                "turns":0
             },
             {
                 "kType":1,
                 "initNum":10,
                 "effNum":10,
-                "range":1
+                "range":1,
+                "turns":0
             },
             {
                 "kType":2,
                 "initNum":10,
                 "effNum":10,
-                "range":1
+                "range":1,
+                "turns":0
             }
         ]
     },
@@ -47,25 +51,29 @@
                 "kType":0,
                 "initNum":5,
                 "effNum":5,
-                "range":1
+                "range":1,
+                "turns":0
             },
             {
                 "kType":0,
                 "initNum":10,
                 "effNum":10,
-                "range":1
+                "range":1,
+                "turns":0
             },
             {
                 "kType":1,
                 "initNum":10,
                 "effNum":10,
-                "range":1
+                "range":1,
+                "turns":0
             },
             {
                 "kType":2,
                 "initNum":5,
                 "effNum":5,
-                "range":1
+                "range":1,
+                "turns":0
             }
         ]
     },
@@ -82,25 +90,29 @@
                 "kType":0,
                 "initNum":10,
                 "effNum":10,
-                "range":3
+                "range":3,
+                "turns":0
             },
             {
                 "kType":0,
                 "initNum":15,
                 "effNum":15,
-                "range":3
+                "range":3,
+                "turns":0
             },
             {
                 "kType":1,
                 "initNum":10,
                 "effNum":10,
-                "range":1
+                "range":1,
+                "turns":0
             },
             {
                 "kType":2,
                 "initNum":13,
                 "effNum":13,
-                "range":1
+                "range":1,
+                "turns":0
             }
         ]
     }
