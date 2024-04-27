@@ -121,7 +121,8 @@ export class creature extends Component {
             stateNum:eSkill.effNum,
             isEffective:true,
             persistTurns:eSkill.turns,
-            beginRound:begin
+            beginRound:begin,
+            descr:eSkill.descr
         }
 
         let typeArr:skillType[]=[];
@@ -160,24 +161,6 @@ export class creature extends Component {
         _flowNum.getComponent(flowNumber).init(num);
         this.node.addChild(_flowNum);
     }
-
-    // setStateEffectTag(_ktype:skillType,num:number){
-    //         let typeArr:skillType[]=[];
-    //         this.stateEffectArray.forEach((_state)=>{
-    //             typeArr.push(_state.getStateType());
-    //         })
-    //         let _index = typeArr.indexOf(_ktype);
-    //         if (_index !== -1) {
-    //             this.stateEffectArray[_index].updateStateNum(num);
-    //             if (num <= 0) {
-    //                this.removeItemFormArray<stateEffect>(this.stateEffectArray[_index],this.stateEffectArray); 
-    //             }
-    //         } else {
-    //             if (num > 0) {
-    //                 this.addStateEffectTag(_ktype,num);
-    //             }
-    //         }
-    // }
 
     addStateEffectTag(stateData:stateObj){
         let _state = instantiate(this.statePrefab);

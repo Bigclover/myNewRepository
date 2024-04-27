@@ -18,7 +18,7 @@ export class hero extends creature {
     public remainCardsAbility:number = 2;//hero留牌数量
     
     private _myDeckCont:deckConteroler = null;
-    private _heroRounds:number = 1;
+    private _heroRounds:number = 0;
 
     protected onEnable(): void {
         ListenerManager.on('hitHero',this.heroBeenHit,this);
@@ -38,10 +38,6 @@ export class hero extends creature {
         super.start();
         this.stand = -5;
         this.creatorDeckControler();
-
-        this.scheduleOnce(()=>{
-            this.heroDrawCards();
-        },1)
     }
 
     roundStart(round:number){
@@ -101,7 +97,7 @@ export class hero extends creature {
                 break;
             case skillType.EFFECT_ATK:
                 let strength = this.getStateNumByType(skillType.EFFECT_ATK);
-                console.log('addEffectToCreature:skillType.EFFECT_ATK:'+strength);
+                // console.log('addEffectToCreature:skillType.EFFECT_ATK:'+strength);
                 this._myDeckCont.adjustAllCardsByHero(cardType.CLOSE_ATK,skillType.ATTACK,strength);
                 break;
             case skillType.LOAD:

@@ -29,7 +29,8 @@ export interface effectObj{
     initNum:number,
     effNum:number,
     range:number,
-    turns:number  //技能生效回合 -1:代表一直生效
+    turns:number,  //技能生效回合 -1:代表一直生效
+    descr:string
 }
 
 export interface stateObj{
@@ -37,7 +38,8 @@ export interface stateObj{
     stateNum:number,
     isEffective:boolean,
     persistTurns:number,
-    beginRound:number
+    beginRound:number,
+    descr:string
 }
 
 export interface deckObj{

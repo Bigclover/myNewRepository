@@ -11,12 +11,19 @@ export class stateEffect extends Component {
     @property(Label)
     numLabel:Label = null;
 
+    @property(Node)
+    infoNode:Node = null;
+
+    @property(Label)
+    infoLabel:Label = null;
+
     private stateType:skillType;
     private stateNum:number = 0;
     private isEffective:boolean = false;
     private persistTurns:number = 0;
     private beginRound:number = 0;
     private creature:creature = null;
+    private descr:string = null;
 
 
     init(stateData:stateObj,_creature:creature){
@@ -25,8 +32,20 @@ export class stateEffect extends Component {
         this.isEffective = stateData.isEffective;
         this.persistTurns = stateData.persistTurns;
         this.beginRound = stateData.beginRound;
+        this.descr = stateData.descr;
 
         this.creature = _creature;
+    }
+    protected onLoad(): void {
+        this.node.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+        this.node.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
+    }
+
+    protected onDestroy(): void {
+        this.node.off(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+        this.node.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
     }
 
     start() {
@@ -53,7 +72,7 @@ export class stateEffect extends Component {
 
     turnsTypeCheckRound(pass:number){ 
         this.stateNum = this.persistTurns - pass;
-        console.log('this.stateNum=',this.stateNum)
+        // console.log('this.stateNum=',this.stateNum)
         this.setNumLabel();
     }
 
@@ -93,6 +112,21 @@ export class stateEffect extends Component {
         this.creature.removeStateFromStateEffectArray(this);
         this.node.removeFromParent();
         this.node.destroy();
+    }
+
+    onTouchBegin(){
+        this.isShowInfoNode(true);
+    }
+
+    onTouchEnd(){
+        this.isShowInfoNode(false);
+    }
+
+    isShowInfoNode(_show:boolean){
+        if (_show) {
+            this.infoLabel.string = this.descr;
+        }
+        this.infoNode.active = _show
     }
 
     update(deltaTime: number) {

@@ -23,14 +23,11 @@ export class mainSecene extends Component {
     @property(JsonAsset)
     monsterConfig:JsonAsset = null
 
-    // @property(Label)
-    // distanceLabel:Label = null;
-
     private _monstersArray:monster[]=[];
     private _myHero:hero = null;
     private _monsterJson:object = null;
-    private heroRound:number = 1;
-    private monsterRound:number = 1;
+    private heroRound:number = 0;
+    private monsterRound:number = 0;
     private _curSelectMonster:number = 0;
     private _monPositionArr:Vec3[]=[];
     
@@ -42,6 +39,10 @@ export class mainSecene extends Component {
         this.createMyHero();
         this.createMonsters(2);
         this.getClosestMonsterSelected();
+        
+        this.scheduleOnce(()=>{
+            this.heroRoundStart();
+        },0.5)
     }
 
     getMonsterRound():number{
@@ -165,6 +166,11 @@ export class mainSecene extends Component {
     heroRoundStart(){
         this.heroRound++;
         this._myHero.roundStart(this.heroRound);
+        if (this._monstersArray.length > 0) {
+            this._monstersArray.forEach((_mon)=>{
+                _mon.showComingSkill();
+            })
+        } 
     }
 
      monsRound(index:number,monsterID:number) {

@@ -1,8 +1,10 @@
-import { Label, Node, Vec3, _decorator, tween} from 'cc';
+import { Label, Layout, Node, Prefab, Vec3, _decorator, instantiate, tween} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { mainSecene } from './mainSecene';
 import { cardType, effectObj, monInfo, skillType } from './gameConfing';
+import { monsterInfoUi } from './monsterInfoUi';
+import { Skill } from './Skill';
 
 const { ccclass, property } = _decorator;
 
@@ -15,6 +17,18 @@ export class monster extends creature {
     @property(Node)
     checkNode:Node = null;
 
+    @property(Node)
+    touchNode:Node = null;
+
+    @property(Prefab)
+    infoPre:Prefab = null;
+
+    @property(Layout)
+    useSkillLayout:Layout = null;
+
+    @property({type:Prefab})
+    skillPrefab:Prefab = null;
+
     private _monsterID:number = 0;
     private _mianSecene:mainSecene = null;
     private _monsterName:string = '';
@@ -22,13 +36,26 @@ export class monster extends creature {
     private _previousDistance:number = 0;
     private _mMoveAbility:number = 0;
     private _curPosition:Vec3;
+    private _mInfo:monInfo = null;
+    private _infoNode:Node = null;
+    // private _touchTime: number = 0;
+    // private _longTapTime: number = 300;
+    private _useSkill:effectObj=null;
 
     protected onEnable(): void {
         ListenerManager.on('hitMonster',this.monsterBeenHit,this);
+
+        this.touchNode.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+        this.touchNode.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.touchNode.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
     }
 
     protected onDisable(): void {
         ListenerManager.off('hitMonster',this.monsterBeenHit,this);
+
+        this.touchNode.off(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+        this.touchNode.off(Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.touchNode.off(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
     }
 
     init(id:number,monsterInfo:monInfo,main:mainSecene){
@@ -41,6 +68,7 @@ export class monster extends creature {
         this._skillsArray =[...monsterInfo.skills];
         this.stand = monsterInfo.stand;
         this._mMoveAbility = monsterInfo.move;
+        this._mInfo = monsterInfo;
     }
 
     start() {
@@ -105,6 +133,26 @@ export class monster extends creature {
         }
     }
 
+    createInfoUi(){
+        this._infoNode = instantiate(this.infoPre)
+        this._infoNode.getComponent(monsterInfoUi).init(this._mInfo);
+        this.node.addChild(this._infoNode);
+    }
+
+    onTouchBegin(){
+        this.createInfoUi();
+        // this._touchTime = Date.now();
+    }
+
+    onTouchEnd(){
+        this._infoNode.destroy();
+        this._infoNode = null;
+        // if (Date.now() > (this._touchTime + this._longTapTime)) {
+        //     //长按
+        // } else {
+        // }
+    }
+
     beenSelected(){
         this._mianSecene.setSelectedMonster(this._monsterID);
     }
@@ -149,33 +197,54 @@ export class monster extends creature {
         }
     }
 
+    showComingSkill(){
+        this._useSkill = this.choseSkill();
+        let _skill = instantiate(this.skillPrefab);
+        _skill.getComponent(Skill).init(this._useSkill.kType,this._useSkill.effNum);
+        this.useSkillLayout.node.addChild(_skill);
+    }
+
+    choseSkill():effectObj{
+        let _index:number = 0;
+        if (this.crCurHp >= this.crMaxHp*0.6) {//只使用攻击或防御
+            _index = Math.floor(Math.random() * (this._skillsArray.length-1));
+        }else{
+            _index = Math.floor(Math.random() * this._skillsArray.length);
+        }
+        console.log("skill index = ",_index);
+        return this._skillsArray[_index];
+    }
+
     async monsterAI(){
-        let skill:effectObj = this.randomArray<effectObj>(this._skillsArray);
-        console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType+"num:"+skill.effNum);
-        switch (skill.kType) {
+        // let skill:effectObj = this.choseSkill();
+        // console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType+"num:"+skill.effNum);
+        switch (this._useSkill.kType) {
             case 0:
                 if (!this.isTangled) {
-                    await this.moveAI(skill.range);
+                    await this.moveAI(this._useSkill.range);
                 }
                 let type:cardType;
-                if (skill.range > 3) {
+                if (this._useSkill.range > 3) {
                     type = cardType.DISTANCE_ATK;
                 } else {
                     type = cardType.CLOSE_ATK;
                 }
-                this.monsterAtkFun(type,skill);
+                this.monsterAtkFun(type,this._useSkill);
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:
-                this.addEffectToCreature(skill);
+                this.addEffectToCreature(this._useSkill);
                 // animTime = this.fightAnim.getState('shield').duration
                 break;
             case 2:
-                this.addHpFun(skill.initNum);
+                this.addHpFun(this._useSkill.initNum);
                 break;
             default:
                 break;
         }
+
+        this.useSkillLayout.node.removeAllChildren();
+        this._useSkill = null;
     }
 
     //多monster时 根据stand 显示上排列
@@ -248,9 +317,9 @@ export class monster extends creature {
         }
     }
 
-    public randomArray<T>(arr: T[]): T {
-        var index: number = Math.floor(Math.random() * arr.length);
-        return arr[index];
-    }
+    // public randomArray<T>(arr: T[]): T {
+    //     var index: number = Math.floor(Math.random() * arr.length);
+    //     return arr[index];
+    // }
 }
 
