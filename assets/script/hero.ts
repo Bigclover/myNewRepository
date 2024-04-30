@@ -63,7 +63,9 @@ export class hero extends creature {
             await this._myDeckCont.drawStableCard();
         }
         await this._myDeckCont.drawCardsFromAll(this.drawCardsAbility);
-        this._myDeckCont.showTurnButton();
+        this.scheduleOnce(()=>{
+            this._myDeckCont.showTurnButton();
+        },0.3);
     }
 
     drawCardsByCard(num:number){

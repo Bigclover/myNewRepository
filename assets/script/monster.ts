@@ -1,4 +1,4 @@
-import { Label, Layout, Node, Prefab, Vec3, _decorator, instantiate, tween} from 'cc';
+import { Label, Layout, Node, Prefab, Tween, Vec3, _decorator, instantiate, tween} from 'cc';
 import { creature } from './creature';
 import { ListenerManager } from '../event/ListenerManager';
 import { mainSecene } from './mainSecene';
@@ -98,7 +98,9 @@ export class monster extends creature {
         let _time = this.getTimeByChange(curNum);
         tween(obj)
         .to(_time,{num:curNum},{progress(start, end, current, ratio){
-            self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
+            if (self.distanceLabel) {
+                self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
+            }
             return  start+ (end - start)*ratio;
         }})
         .start();
@@ -111,13 +113,17 @@ export class monster extends creature {
     }
 
     roundStart(){
+        this.checkPoisonState();
+
+        //伤害性检测在这之前 
+        if (this.crCurHp <= 0) {
+            return;
+        }
         let stateDef = this.getStateEffByType(skillType.DEFEND);
         if (stateDef) {
             stateDef.checkEffectState(this._mianSecene.getMonsterRound());
         } 
-
         this.checkIsCanMove();
-
         let stateStun = this.getStateEffByType(skillType.STUN);
         if (stateStun) {
            let isStunned = stateStun.checkEffectState(this._mianSecene.getMonsterRound());
@@ -187,10 +193,10 @@ export class monster extends creature {
     }
 
     checkIsCanMove(){
-        let stateStun = this.getStateEffByType(skillType.TANGLE);
-        if (stateStun) {
+        let stateTangle= this.getStateEffByType(skillType.TANGLE);
+        if (stateTangle) {
             this.isTangled = true;
-            let isTangled = stateStun.checkEffectState(this._mianSecene.getMonsterRound());
+            let isTangled = stateTangle.checkEffectState(this._mianSecene.getMonsterRound());
             if (!isTangled) {
                 this.isTangled = false;
             }
@@ -198,9 +204,12 @@ export class monster extends creature {
     }
 
     showComingSkill(){
+        this.useSkillLayout.node.removeAllChildren();
+        this._useSkill = null;
+
         this._useSkill = this.choseSkill();
         let _skill = instantiate(this.skillPrefab);
-        _skill.getComponent(Skill).init(this._useSkill.kType,this._useSkill.effNum);
+        _skill.getComponent(Skill).init(this._useSkill,true);
         this.useSkillLayout.node.addChild(_skill);
     }
 
@@ -233,7 +242,7 @@ export class monster extends creature {
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
             case 1:
-                this.addEffectToCreature(this._useSkill);
+                this.setEffect(this._useSkill);
                 // animTime = this.fightAnim.getState('shield').duration
                 break;
             case 2:
@@ -280,7 +289,7 @@ export class monster extends creature {
                     if (skill.kType == skillType.ATTACK) {
                         this.dealWithDamage(skill.effNum);
                     }else{
-                        this.addEffectToCreature(skill);
+                        this.setEffect(skill,true);
                     }
                 } else {
                     //攻击范围外 处理未击中效果
@@ -290,8 +299,13 @@ export class monster extends creature {
         }
     }
 
-    addEffectToCreature(skill:effectObj){
-        let begin = this._mianSecene.getMonsterRound();
+    setEffect(skill:effectObj,formHero:boolean = false){
+        let begin:number;
+        if (formHero) {
+            begin = this._mianSecene.getMonsterRound()+1;
+        } else {
+            begin = this._mianSecene.getMonsterRound();
+        }
         super.addEffectToCreature(skill,begin);
     }
 
@@ -317,9 +331,8 @@ export class monster extends creature {
         }
     }
 
-    // public randomArray<T>(arr: T[]): T {
-    //     var index: number = Math.floor(Math.random() * arr.length);
-    //     return arr[index];
-    // }
+    protected onDestroy(): void {
+        Tween.stopAll()
+    }
 }
 

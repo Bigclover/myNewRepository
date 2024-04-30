@@ -80,7 +80,7 @@ export class card extends Component {
         }
         this.cardSkills.forEach((skill)=>{
             let _skill = instantiate(this.skillPrefab);
-            _skill.getComponent(Skill).init(skill.kType,skill.effNum);
+            _skill.getComponent(Skill).init(skill);
             this.skillPanel.addChild(_skill);
             if (skill.kType == skillType.ATTACK) {
                 this._skillRange = skill.range;
@@ -165,7 +165,7 @@ export class card extends Component {
     adjustSkillDisplay(_type:skillType,num:number){
         this.skillPanel.children.forEach((child)=>{
             let _skill = child.getComponent(Skill)
-            if (_skill.skillType == _type) {
+            if (_skill.getSkill().kType == _type) {
                 _skill.setSkillNum(num);
             }
         })

@@ -1,7 +1,7 @@
 import { _decorator, Animation, AnimationState, Component, instantiate, Label, Layout, Node, Prefab, ProgressBar, tween } from 'cc';
 import { flowNumber } from './flowNumber';
 import { AudioMgr } from '../tool/AudioMgr';
-import { cardType, effectObj, skillType, stateObj } from './gameConfing';
+import { cardType, DebufData, effectObj, gameConfing, skillType, stateObj } from './gameConfing';
 import { stateEffect } from './stateEffect';
 
 
@@ -134,6 +134,19 @@ export class creature extends Component {
             this.stateEffectArray[_index].dealWithChange(eSkill.effNum);
         } else {
             this.addStateEffectTag(_state);  
+        }
+    }
+    
+    checkPoisonState(){
+        let poison= this.getStateEffByType(skillType.POISON);
+        if (poison) {
+            let bufData:DebufData = gameConfing.instance.getDebufData(skillType.POISON);
+            let layer = poison.getStateNum();
+            if (layer > 0) {
+                let damage:number = layer*bufData.damagePerLayer;
+                this.changeHpFun(-damage);
+            }
+            poison.dealWithChange(bufData.layerPerRound);
         }
     }
 

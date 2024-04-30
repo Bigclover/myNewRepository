@@ -31,6 +31,9 @@ export class deckConteroler extends Component {
     @property(Node)
     butNode:Node = null;
 
+    @property(Node)
+    blockNode:Node = null;
+
     private _allCardsArray:card[]=[];
     private _handCardsArray:card[]=[];
     private _discardArray:card[]=[];
@@ -55,12 +58,14 @@ export class deckConteroler extends Component {
     }
 
     async endTurnButton(){
+        this.blockNode.active = true;
         this.butNode.active = false;
         await this.checkRemianHandCards(this._mHero.remainCardsAbility);
         this._mHero.heroEndTurn();
     }
 
     showTurnButton(){
+        this.blockNode.active = false;
         this.butNode.active = true;
     }
 
@@ -258,6 +263,9 @@ export class deckConteroler extends Component {
                 this._mHero.addEffectToCreature(skill);
                 break;
             case skillType.TANGLE:
+                this._mHero.addEffectToMonster(skill);
+                break; 
+            case skillType.POISON:
                 this._mHero.addEffectToMonster(skill);
                 break;     
             default:

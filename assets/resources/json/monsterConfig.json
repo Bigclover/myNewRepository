@@ -27,7 +27,7 @@
                 "initNum":10,
                 "effNum":10,
                 "range":1,
-                "turns":0,
+                "turns":1,
                 "descr":"护甲:持续一回合"
             },
             {
@@ -67,7 +67,7 @@
                 "initNum":10,
                 "effNum":10,
                 "range":1,
-                "turns":0,
+                "turns":1,
                 "descr":"护甲:持续一回合"
             },
             {
@@ -107,7 +107,7 @@
                 "initNum":10,
                 "effNum":10,
                 "range":1,
-                "turns":0,
+                "turns":1,
                 "descr":"护甲:持续一回合"
             },
             {

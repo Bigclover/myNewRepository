@@ -16,12 +16,18 @@ export enum skillType {
     MOVE = 5, //位移
     STUN = 6, //眩晕
     LOAD = 7, //装弹
-    TANGLE = 8 //缠结
+    TANGLE = 8, //缠结
+    POISON = 9  //毒
 }
 
 export interface mAndvObj{
   monId:number,
   value:number
+}
+
+export interface DebufData{
+  damagePerLayer:number,
+  layerPerRound:number
 }
 
 export interface effectObj{
@@ -73,6 +79,23 @@ export class gameConfing {
         return this._instance;
     }
 
+    getDebufData(type:skillType):DebufData{
+      let _debufData:DebufData = null;
+      switch (type) {
+        case skillType.POISON:
+          _debufData={
+            damagePerLayer:2,
+            layerPerRound:-1
+          }
+          break;
+      
+        default:
+          break;
+      }
+
+      return _debufData;
+    }
+
     getImgPatchByType(type:number):string{
       let _patch:string = '';
       switch (type) {
@@ -102,7 +125,10 @@ export class gameConfing {
               break;  
           case skillType.TANGLE:
               _patch = 'tangle';
-              break;    
+              break;
+          case skillType.POISON:
+              _patch = 'poison';
+              break;  
           default:
               _patch = 'atk';
               break;

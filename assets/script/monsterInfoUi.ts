@@ -40,7 +40,7 @@ export class monsterInfoUi extends Component {
     setSkillInfo(){
         this.monsterInfo.skills.forEach((_skill)=>{
             let skill = instantiate(this.skillPre);
-            skill.getComponent(Skill).init(_skill.kType,_skill.effNum);
+            skill.getComponent(Skill).init(_skill,true);
             this.skillLayout.addChild(skill);
         })
     }

@@ -1,5 +1,5 @@
 import { _decorator, Component, Label, Material, Node, resources, Sprite, SpriteFrame } from 'cc';
-import { gameConfing, skillType } from './gameConfing';
+import { effectObj, gameConfing, skillType } from './gameConfing';
 const { ccclass, property } = _decorator;
 
 @ccclass('Skill')
@@ -10,23 +10,28 @@ export class Skill extends Component {
     @property(Sprite)
     typeSprite:Sprite = null;
 
-    public skillType:skillType=0;
-    public skillNum:number = 0;
-    private _mute:boolean = false;
+    @property(Label)
+    rangeLabel:Label = null;
 
-    init(type:skillType,num:number,mute:boolean=false){
-        this.skillType = type;
-        this.skillNum = num;
-        this._mute = mute;
+    private skill:effectObj = null;
+    private _isShowRange:boolean = false;
+
+    init(_skill:effectObj,range:boolean=false){
+        this.skill = _skill;
+        this._isShowRange = range;
+    }
+
+    getSkill():effectObj{
+        return this.skill;
     }
 
     setSkillNum(num:number){
-        this.skillNum = num;
+        this.skill.effNum = num;
         let numStr:string =''
-        if (this.skillNum >= 0) {
-            numStr = this.skillNum.toString();
+        if (this.skill.effNum >= 0) {
+            numStr = this.skill.effNum.toString();
         } else {
-            numStr = ':'+this.skillNum.toString();
+            numStr = ':'+this.skill.effNum.toString();
         }
         this.numLabel.string = numStr;
     }
@@ -38,13 +43,17 @@ export class Skill extends Component {
     
     start() {
         let numStr:string =''
-        if (this.skillNum >= 0) {
-            numStr = this.skillNum.toString();
+        if (this.skill.effNum >= 0) {
+            numStr = this.skill.effNum.toString();
         } else {
-            numStr = ':'+this.skillNum.toString();
+            numStr = ':'+this.skill.effNum.toString();
+        }
+        if (this._isShowRange && this.skill.kType == skillType.ATTACK) {
+            this.rangeLabel.node.active = true;
+            this.rangeLabel.string = "("+this.skill.range+")";
         }
         this.numLabel.string = numStr;
-        let typePatch:string = gameConfing.instance.getImgPatchByType(this.skillType);
+        let typePatch:string = gameConfing.instance.getImgPatchByType(this.skill.kType);
         resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
             this.typeSprite.spriteFrame = spriteFrame;
             // this.typeSprite.spriteFrame.addRef();

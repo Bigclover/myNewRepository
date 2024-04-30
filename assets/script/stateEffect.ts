@@ -52,13 +52,15 @@ export class stateEffect extends Component {
         this.setNumLabel();
         let typePatch:string = gameConfing.instance.getImgPatchByType(this.stateType);
         resources.load(typePatch, SpriteFrame, (err, spriteFrame) => {
-            this.imgSprite.spriteFrame = spriteFrame;
+            if (this.imgSprite) {
+                this.imgSprite.spriteFrame = spriteFrame;
+            }
         });
     }
 
     checkEffectState(_round:number):boolean{
         let passRound = _round - this.beginRound;
-        if (passRound > this.persistTurns) {
+        if (passRound >= this.persistTurns) {
             this.isEffective = false;
             this.cancelStateEffect();
         }else{
@@ -70,7 +72,7 @@ export class stateEffect extends Component {
         return this.isEffective;
     }
 
-    turnsTypeCheckRound(pass:number){ 
+    turnsTypeCheckRound(pass:number){
         this.stateNum = this.persistTurns - pass;
         // console.log('this.stateNum=',this.stateNum)
         this.setNumLabel();
