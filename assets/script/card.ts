@@ -85,12 +85,10 @@ export class card extends Component {
             if (skill.kType == skillType.ATTACK) {
                 this._skillRange = skill.range;
                 this.nameLabel.string = this.cardName+'(R:'+this._skillRange+')';
-
-                if (this.cardType == cardType.DISTANCE_ATK) {
-                    this.descLabel.string = this.cardDesc+skill.initNum;
-                }
             }
         })
+
+        this.descLabel.string = this.cardDesc;
 
         if (this.isOneoff) {//如果是一次性卡牌 加入shader效果
             AssetsManger.instance.loadMaterial("SpriteAblation","shader").then((mData)=>{
@@ -154,7 +152,10 @@ export class card extends Component {
         this.cardSkills.forEach((skill)=>{
             if (skill.kType == _type) {
                 skill.effNum = skill.initNum + effectNum;
-                if (this.cardType == cardType.DISTANCE_ATK && mute) {
+                if (skill.kType == skillType.POISONEXECUTE) {
+                    skill.effNum = skill.initNum*effectNum;
+                }
+                if (mute) {
                     skill.effNum = 0;
                 }
                 this.adjustSkillDisplay(_type,skill.effNum);

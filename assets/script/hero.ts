@@ -89,6 +89,14 @@ export class hero extends creature {
         this._mianSecene.heroMoveFinish();
     }
 
+    updatePoisonCardNum(layer:number){
+        if (layer > 0) {
+            this._myDeckCont.adjustAllCardsByHero(cardType.EXECUTE,skillType.POISONEXECUTE,layer);
+        }else{
+            this._myDeckCont.adjustAllCardsByHero(cardType.EXECUTE,skillType.POISONEXECUTE,0,true);
+        }
+    }
+
     addEffectToCreature(skill:effectObj,begin:number=this._heroRounds){
         super.addEffectToCreature(skill,begin);
         switch (skill.kType) {

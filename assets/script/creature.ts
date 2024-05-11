@@ -190,7 +190,7 @@ export class creature extends Component {
     effectExecutedBySkill(_skill:effectObj){
         switch (_skill.kType) {
             case skillType.POISONEXECUTE:
-                this.poisonExecuted(_skill.effNum);
+                this.poisonExecuted(_skill.initNum);
                 break;
         
             default:

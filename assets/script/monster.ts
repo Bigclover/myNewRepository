@@ -297,6 +297,10 @@ export class monster extends creature {
             begin = this._mianSecene.getMonsterRound();
         }
         super.addEffectToCreature(skill,begin);
+
+        if (skill.kType == skillType.POISON) {
+            this._mianSecene.updatePoisonExecuteNum(this.getMonsterID());
+        }
     }
 
     getDistanceFormHero():number{

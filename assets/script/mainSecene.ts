@@ -1,7 +1,7 @@
 import { _decorator, Component, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween, Vec3,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
-import { mAndvObj } from './gameConfing';
+import { mAndvObj, skillType } from './gameConfing';
 
 // import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
@@ -38,9 +38,9 @@ export class mainSecene extends Component {
     start() {
         this.createMyHero();
         this.createMonsters(2);
-        this.getClosestMonsterSelected();
         
         this.scheduleOnce(()=>{
+            this.getClosestMonsterSelected();
             this.heroRoundStart();
         },0.5)
     }
@@ -127,6 +127,21 @@ export class mainSecene extends Component {
     setSelectedMonster(num:number){
         this._curSelectMonster = num;
         this.setSelectedTag(num);
+
+        this.updatePoisonExecuteNum(num);
+    }
+
+    updatePoisonExecuteNum(mID:number){
+        this._monstersArray.forEach((_mon)=>{
+            if(_mon.getMonsterID()==mID){
+                let layer = 0;
+                let poison = _mon.getStateEffByType(skillType.POISON)
+                if (poison) {
+                    layer = poison.getStateNum();
+                }
+                this._myHero.updatePoisonCardNum(layer);
+            }
+        })
     }
 
     getSelectedMonster(){
@@ -365,6 +380,124 @@ export class mainSecene extends Component {
         //分支相关 git branch 列出你在本地的分支，git branch branchName 创建一个分支 ，git checkout 分支切换,
         //git merge branchName 将指定分支合并到当前分支 git branch -d branchName 删除分支
         //版本回退 进入相应分支 根据git log --oneline --graph 显示的每次提交的ID，用git reset --hard ID 回退到对应的提交状态
+    }
+
+    // async setSpFun(){
+    //     this.squareNode.getComponent(Sprite).spriteFrame = await AssetsManger.instance.loadImg('taiyang/spriteFrame','myAssetBudle');
+    // }
+
+    baseinfo(){
+        // 2Dnode属性修改test
+        // this.squareNode.active = false;//隐藏节点
+        // this.squareNode.setPosition(100,50,0);
+        // this.squareNode.setRotationFromEuler(new Vec3(0,0,45));
+        // this.squareNode.setScale(new Vec3(2,1,1));
+        // this.squareNode.layer = Layers.Enum.UI_2D;
+        // this.squareNode.setSiblingIndex(1);//zIndex
+        // this.squareNode.getComponent(UITransform).setAnchorPoint(0.5,0.5)
+        // this.squareNode.getComponent(UITransform).setContentSize(new Size(80,40));
+        // this.squareNode.getComponent(Sprite).color = color(255,255,255,100);
+        // this.squareNode.getComponent(Sprite).color.fromHEX("0587FF");
+
+        
+        // this.node.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
+        // input.on(Input.EventType.TOUCH_START, this.onTouchBegin, this);
+
+        //Tween test
+        // let myTween = tween(this.squareNode)
+        // .tag(1)
+        // .to(2,{position:new Vec3(this.squareNode.position.x,this.squareNode.position.y+100,this.squareNode.position.z)})
+        // .by(2,{position:new Vec3(100,0,0)}, { easing: 'backIn'})
+        // .by(1,{scale:new Vec3(1,0,0)})
+        // .to(1,{rotation:Quat.fromEuler(new Quat(), 0, 0, 45)})
+        // .set({ position: new Vec3(0, 100, 0) })//瞬时动作or属性设置
+        // .delay(1)
+        // .removeSelf()
+        // .parallel(// 同时执行两个 Tween
+        //     tween().to(2, { scale: new Vec3(1, 2, 3) }),
+        //     tween().to(2, { position: new Vec3(3, 0, 3) })
+        // )
+        // .call(()=>{
+        //     console.log('my tween done...')
+        // })
+        // .start()
+
+        //Tween stop
+        // myTween.stop();
+        // Tween.stopAll()
+        // Tween.stopAllByTag(1);
+
+        //3.x spriteFrame 导入
+        // const url = 'img/toy1/spriteFrame';
+        // resources.load(url, SpriteFrame, (err: any, spriteFrame) => {
+        // this.squareNode.getComponent(Sprite).spriteFrame = spriteFrame;
+        // });
+
+        // 加载 texture
+        // resources.load("img/toy1/texture", Texture2D, (err: any, texture: Texture2D) => {
+        //     const spriteFrame = new SpriteFrame();
+        //     spriteFrame.texture = texture;
+        //     this.squareNode.getComponent(Sprite).spriteFrame = spriteFrame;
+        // });
+
+        //加载图集
+        // resources.load("test_assets/sheep", SpriteAtlas, (err, atlas) => {
+        //     const frame = atlas.getSpriteFrame('sheep_down_0');
+        //     sprite.spriteFrame = frame;
+        // });
+
+        //存放在服务器上的资源只能加载到图像源资源 ImageAsset
+        // const url = 'test_assets/test_atlas/content';
+        // resources.load(url, ImageAsset, (err: any, imageAsset) => {
+        // const sprite = this.getComponent(Sprite);
+        // sprite.spriteFrame = SpriteFrame.createWithImage(imageAsset);
+        // });
+
+        // 加载 Prefab
+        // resources.load("test_assets/prefab", Prefab, (err, prefab) => {
+        //     const newNode = instantiate(prefab);
+        //     this.node.addChild(newNode);
+        // });
+
+        // 加载 AnimationClip
+        // resources.load("test_assets/anim", AnimationClip, (err, clip) => {s
+        //     this.node.getComponent(Animation).addClip(clip, "anim");
+        // });
+
+        //加载Scene
+        // director.loadScene("MyScene",()=>{
+        //     //场景加载后的回调
+        // });
+        //director.preloadScene()//预加载场景
+        // bundle.loadScene('MyScene', function (err, scene) {
+        //     director.runScene(scene);
+        // });
+
+        // let interval = 5;// 以秒为单位的时间间隔
+        // let repeat = 3;// 重复次数
+        // let delay = 10;// 开始延时
+        // let callback = this.schedule(function() {
+        // 这里的 this 指向 component
+        // }, interval, repeat, delay);//上面的计时器将在 10 秒后开始计时，每 5 秒执行一次回调，重复 3 + 1 次
+        // this.unschedule(callback);//取消这个计时器
+    }
+    
+    async spineTestFun(){
+        //spine挂点
+        // let _scoketName = "root/bone2/tigo_43__Layer_67/bone/qiang/qiang2/qiang4/qiang3";
+        // let scoket = new sp.SpineSocket(_scoketName,this.attachNode);
+        // this.t2!.sockets.push(scoket);
+        // this.t2!.sockets = this.t2!.sockets;
+
+        //spine顶点效果
+        // this._jitterEffect = new sp.VertexEffectDelegate();
+        //  // 设置好抖动参数。
+        //  this._jitterEffect.initJitter(10, 10);
+        //  // 调用 Skeleton 组件的 setVertexEffectDelegate 方法设置效果。
+        //  this.t2!.setVertexEffectDelegate(this._jitterEffect!);
+        
+        // await this.playSpine(this.t2,"tigo_xie_baqiangkaiqiang",false);
+        // console.log('spine anim done')
     }
 }
 
