@@ -267,7 +267,10 @@ export class deckConteroler extends Component {
                 break; 
             case skillType.POISON:
                 this._mHero.addEffectToMonster(skill);
-                break;     
+                break;
+            case skillType.POISONEXECUTE:
+                this._mHero.addEffectToMonster(skill);
+                break;      
             default:
                 
                 break;

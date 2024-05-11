@@ -61,7 +61,6 @@ export class stateEffect extends Component {
     checkEffectState(_round:number):boolean{
         let passRound = _round - this.beginRound;
         if (passRound >= this.persistTurns) {
-            this.isEffective = false;
             this.cancelStateEffect();
         }else{
             if (this.getStateType() == skillType.STUN 
@@ -110,6 +109,7 @@ export class stateEffect extends Component {
     // }
 
     cancelStateEffect(){
+        this.isEffective = false;
         console.log('cancel state Type:'+this.stateType+"num:"+this.stateNum);
         this.creature.removeStateFromStateEffectArray(this);
         this.node.removeFromParent();

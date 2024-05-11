@@ -36,7 +36,8 @@ export default class deckData{
     {cardType:cardType.DRAWCARD,cardName:'神抽',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.DRAWCARD,initNum:1,effNum:1,range:0,turns:0,descr:''}],descr:''},
     {cardType:cardType.MOVE,cardName:'后撤步',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.TANGLE,initNum:2,effNum:2,range:10,turns:2,descr:'缠绕:无法位移'},{kType:skillType.MOVE,initNum:-5,effNum:-5,range:0,turns:0,descr:''}],descr:''},
     // {cardType:cardType.MOVE,cardName:'突进',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:5,effNum:5,range:0,turns:0}],descr:''},
-    {cardType:cardType.EFFECT,cardName:'毒药',isOneoff:false,isStable:true,consumption:0,baseEffect:[{kType:skillType.POISON,initNum:5,effNum:5,range:10,turns:0,descr:'每层造成伤害'}],descr:''}
+    {cardType:cardType.EFFECT,cardName:'毒药',isOneoff:false,isStable:true,consumption:0,baseEffect:[{kType:skillType.POISON,initNum:5,effNum:5,range:10,turns:0,descr:'每层造成伤害'}],descr:''},
+    {cardType:cardType.EXECUTE,cardName:'毒杀',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.POISONEXECUTE,initNum:4,effNum:4,range:-1,turns:0,descr:''}],descr:''}
     // {cardType:cardType.MOVE,cardName:'冲锋',isOneoff:false,isStable:true,consumption:0,baseEffect:[{kType:skillType.MOVE,initNum:10,effNum:10,range:0,turns:0,descr:''},{kType:skillType.STUN,initNum:1,effNum:1,range:1,turns:1,descr:'眩晕:无法行动'}],descr:''}          
     ];
 

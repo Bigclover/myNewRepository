@@ -113,17 +113,13 @@ export class monster extends creature {
     }
 
     roundStart(){
-        this.checkPoisonState();
+        super.creatureRoundStart(this._mianSecene.getMonsterRound())
 
         //伤害性检测在这之前 
         if (this.crCurHp <= 0) {
             return;
         }
-        let stateDef = this.getStateEffByType(skillType.DEFEND);
-        if (stateDef) {
-            stateDef.checkEffectState(this._mianSecene.getMonsterRound());
-        } 
-        this.checkIsCanMove();
+
         let stateStun = this.getStateEffByType(skillType.STUN);
         if (stateStun) {
            let isStunned = stateStun.checkEffectState(this._mianSecene.getMonsterRound());
@@ -192,17 +188,6 @@ export class monster extends creature {
         })
     }
 
-    checkIsCanMove(){
-        let stateTangle= this.getStateEffByType(skillType.TANGLE);
-        if (stateTangle) {
-            this.isTangled = true;
-            let isTangled = stateTangle.checkEffectState(this._mianSecene.getMonsterRound());
-            if (!isTangled) {
-                this.isTangled = false;
-            }
-        }
-    }
-
     showComingSkill(){
         this.useSkillLayout.node.removeAllChildren();
         this._useSkill = null;
@@ -228,7 +213,7 @@ export class monster extends creature {
         // let skill:effectObj = this.choseSkill();
         // console.log('ID:'+this._monsterID +'speed:'+this.crSpeed+'do:'+skill.kType+"num:"+skill.effNum);
         switch (this._useSkill.kType) {
-            case 0:
+            case skillType.ATTACK:
                 if (!this.isTangled) {
                     await this.moveAI(this._useSkill.range);
                 }
@@ -241,12 +226,15 @@ export class monster extends creature {
                 this.monsterAtkFun(type,this._useSkill);
                 // animTime = this.fightAnim.getState('atkback').duration
                 break;
-            case 1:
+            case skillType.DEFEND:
                 this.setEffect(this._useSkill);
                 // animTime = this.fightAnim.getState('shield').duration
                 break;
-            case 2:
+            case skillType.REVIVE:
                 this.addHpFun(this._useSkill.initNum);
+                break;
+            case skillType.POISON:
+                this.monsterAtkFun(type,this._useSkill);
                 break;
             default:
                 break;
@@ -284,16 +272,18 @@ export class monster extends creature {
     monsterBeenHit(monID:number,skill:effectObj){
         if (monID!=null && skill!=null) {
             if (this._monsterID == monID) {
-                let dis = this.getDistanceFormHero();
-                if (skill.range >= dis) {
-                    if (skill.kType == skillType.ATTACK) {
+                if (skill.kType == skillType.ATTACK) {
+                    let dis = this.getDistanceFormHero();
+                    if (skill.range >= dis) {
                         this.dealWithDamage(skill.effNum);
-                    }else{
-                        this.setEffect(skill,true);
+                    } else {
+                        //攻击范围外 处理未击中效果
+                        this.missAnim();
                     }
-                } else {
-                    //攻击范围外 处理未击中效果
-                    this.missAnim();
+                }else if (skill.kType == skillType.POISONEXECUTE) {
+                    this.effectExecutedBySkill(skill);
+                }else{
+                    this.setEffect(skill,true);
                 }
             }
         }
@@ -332,7 +322,8 @@ export class monster extends creature {
     }
 
     protected onDestroy(): void {
-        Tween.stopAll()
+        Tween.stopAll();
+        this.unscheduleAllCallbacks();
     }
 }
 

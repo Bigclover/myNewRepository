@@ -136,6 +136,17 @@ export class creature extends Component {
             this.addStateEffectTag(_state);  
         }
     }
+
+    creatureRoundStart(_round:number){
+        this.checkPoisonState();
+
+        let stateDef = this.getStateEffByType(skillType.DEFEND);
+        if (stateDef) {
+            stateDef.checkEffectState(_round);
+        }
+
+        this.checkIsCanMove(_round);
+    }
     
     checkPoisonState(){
         let poison= this.getStateEffByType(skillType.POISON);
@@ -147,6 +158,17 @@ export class creature extends Component {
                 this.changeHpFun(-damage);
             }
             poison.dealWithChange(bufData.layerPerRound);
+        }
+    }
+
+    checkIsCanMove(_round:number){
+        let stateTangle= this.getStateEffByType(skillType.TANGLE);
+        if (stateTangle) {
+            this.isTangled = true;
+            let isTangled = stateTangle.checkEffectState(_round);
+            if (!isTangled) {
+                this.isTangled = false;
+            }
         }
     }
 
@@ -162,6 +184,36 @@ export class creature extends Component {
             AudioMgr.inst.playEffect('audio','atk');
         }else if (_cardType == cardType.DISTANCE_ATK) {
             AudioMgr.inst.playEffect('audio','shoot');
+        }
+    }
+
+    effectExecutedBySkill(_skill:effectObj){
+        switch (_skill.kType) {
+            case skillType.POISONEXECUTE:
+                this.poisonExecuted(_skill.effNum);
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    poisonExecuted(perDamage:number){
+        let poison= this.getStateEffByType(skillType.POISON);
+        if (poison) {
+            let layer = poison.getStateNum();
+            if (layer > 0) {
+                let totaldamage:number = layer*perDamage;
+                this.changeHpFun(-totaldamage);
+            }
+            this.termianlEffectState(skillType.POISON);
+        }
+    }
+
+    termianlEffectState(_type:skillType){
+        let _state = this.getStateEffByType(_type);
+        if (_state) {
+            _state.cancelStateEffect();
         }
     }
 

@@ -42,11 +42,8 @@ export class hero extends creature {
 
     roundStart(round:number){
         this._heroRounds = round;
+        super.creatureRoundStart(this._heroRounds );
         //hero round start 清除单轮效果
-        let stateDef = this.getStateEffByType(skillType.DEFEND);
-        if (stateDef) {
-            stateDef.checkEffectState(this._heroRounds);
-        }
 
         let stateAtk = this.getStateEffByType(skillType.EFFECT_ATK);
         if (stateAtk) {
@@ -92,8 +89,8 @@ export class hero extends creature {
         this._mianSecene.heroMoveFinish();
     }
 
-    addEffectToCreature(skill:effectObj){
-        super.addEffectToCreature(skill,this._heroRounds);
+    addEffectToCreature(skill:effectObj,begin:number=this._heroRounds){
+        super.addEffectToCreature(skill,begin);
         switch (skill.kType) {
             case skillType.DEFEND:
                 break;
@@ -145,13 +142,27 @@ export class hero extends creature {
     }
 
     heroBeenHit(mID:number,_skill:effectObj){
-        let dis = this.getDistanceFormMonster(mID);
-        if (_skill.range >= dis) {
-            this.dealWithDamage(_skill.effNum);
+        if (_skill.kType == skillType.ATTACK) {
+            let dis = this.getDistanceFormMonster(mID);
+            if (_skill.range >= dis) {
+                this.dealWithDamage(_skill.effNum);
+            } else {
+                //攻击范围外 处理未击中效果
+                this.missAnim();
+            }
+        }else{
+            this.setEffect(_skill,true);
+        } 
+    }
+
+    setEffect(skill:effectObj,formMonster:boolean = false){
+        let begin:number;
+        if (formMonster) {
+            begin = this._heroRounds+1;
         } else {
-            //攻击范围外 处理未击中效果
-            this.missAnim();
+            begin = this._heroRounds;
         }
+        this.addEffectToCreature(skill,begin);
     }
 
     getDistanceFormMonster(mid:number):number{

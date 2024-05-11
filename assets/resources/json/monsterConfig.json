@@ -23,6 +23,13 @@
                 "turns":0
             },
             {
+                "kType":9,
+                "initNum":5,
+                "effNum":5,
+                "range":10,
+                "turns":-1
+            },
+            {
                 "kType":1,
                 "initNum":10,
                 "effNum":10,
@@ -61,6 +68,13 @@
                 "effNum":10,
                 "range":1,
                 "turns":0
+            },
+            {
+                "kType":9,
+                "initNum":5,
+                "effNum":5,
+                "range":10,
+                "turns":-1
             },
             {
                 "kType":1,

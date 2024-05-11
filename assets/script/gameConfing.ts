@@ -5,6 +5,7 @@ export enum cardType {
   REVIVE = 3,
   DRAWCARD = 4,      //EFFECT_ATK,STUN
   MOVE = 5,
+  EXECUTE = 6
 }
 
 export enum skillType {
@@ -17,7 +18,8 @@ export enum skillType {
     STUN = 6, //眩晕
     LOAD = 7, //装弹
     TANGLE = 8, //缠结
-    POISON = 9  //毒
+    POISON = 9,  //毒
+    POISONEXECUTE = 10 
 }
 
 export interface mAndvObj{
@@ -84,7 +86,7 @@ export class gameConfing {
       switch (type) {
         case skillType.POISON:
           _debufData={
-            damagePerLayer:2,
+            damagePerLayer:1,
             layerPerRound:-1
           }
           break;
@@ -128,7 +130,10 @@ export class gameConfing {
               break;
           case skillType.POISON:
               _patch = 'poison';
-              break;  
+              break;
+          case skillType.POISONEXECUTE:
+              _patch = 'poisonkill';
+              break; 
           default:
               _patch = 'atk';
               break;
