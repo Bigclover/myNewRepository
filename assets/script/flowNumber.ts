@@ -1,4 +1,4 @@
-import { _decorator, Animation, AnimationState, Component, Label, Node } from 'cc';
+import { _decorator, Animation, AnimationState, color, Component, Label, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('flowNumber')

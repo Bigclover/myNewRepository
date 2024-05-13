@@ -19,7 +19,8 @@ export enum skillType {
     LOAD = 7, //装弹
     TANGLE = 8, //缠结
     POISON = 9,  //毒
-    POISONEXECUTE = 10 
+    POISONEXECUTE = 10, //毒终结
+    DAMAGEHEAL =11  //吸血状态
 }
 
 export interface mAndvObj{
@@ -90,7 +91,12 @@ export class gameConfing {
             layerPerRound:-1
           }
           break;
-      
+        case skillType.DAMAGEHEAL:
+          _debufData={
+            damagePerLayer:0.1,
+            layerPerRound:-1
+          }
+          break;
         default:
           break;
       }
@@ -133,7 +139,10 @@ export class gameConfing {
               break;
           case skillType.POISONEXECUTE:
               _patch = 'poisonkill';
-              break; 
+              break;
+          case skillType.DAMAGEHEAL:
+              _patch = 'atkHeal';
+              break;
           default:
               _patch = 'atk';
               break;

@@ -218,6 +218,7 @@ export class mainSecene extends Component {
             mrArray.push(this.monsRound(i,speedArray[i].monId));
         }
         for await (let monsRound of mrArray) {}
+        this.updatePoisonExecuteNum(this.getSelectedMonster());
         this.monsterActFinished();
     }
 

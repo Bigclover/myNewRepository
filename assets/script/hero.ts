@@ -124,7 +124,7 @@ export class hero extends creature {
     }
 
     doHeroAtk(_card:card,skill:effectObj){
-        super.doAtkFun(_card.getCardType());
+        super.doAtkFun(_card.getCardType(),skill);
         this.fightAnim.play('atk');
         let monsterId:number = this._mianSecene.getSelectedMonster();
         ListenerManager.dispatch('hitMonster',monsterId,skill);

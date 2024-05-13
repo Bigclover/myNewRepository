@@ -269,8 +269,11 @@ export class deckConteroler extends Component {
                 this._mHero.addEffectToMonster(skill);
                 break;
             case skillType.POISONEXECUTE:
-                this._mHero.addEffectToMonster(skill);
-                break;      
+                this._mHero.doHeroAtk(_card,skill);
+                break;
+            case skillType.DAMAGEHEAL:
+                this._mHero.addEffectToCreature(skill);
+                break;    
             default:
                 
                 break;

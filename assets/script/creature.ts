@@ -138,7 +138,11 @@ export class creature extends Component {
     }
 
     creatureRoundStart(_round:number){
-        this.checkPoisonState();
+        let poison = this.checkBufState(skillType.POISON);
+        if (poison > 0) {
+            this.changeHpFun(-poison);
+        }
+        this.checkBufState(skillType.DAMAGEHEAL);
 
         let stateDef = this.getStateEffByType(skillType.DEFEND);
         if (stateDef) {
@@ -148,17 +152,20 @@ export class creature extends Component {
         this.checkIsCanMove(_round);
     }
     
-    checkPoisonState(){
-        let poison= this.getStateEffByType(skillType.POISON);
-        if (poison) {
-            let bufData:DebufData = gameConfing.instance.getDebufData(skillType.POISON);
-            let layer = poison.getStateNum();
+    checkBufState(sType:skillType,isDealChange:boolean = true):number{
+        let buf= this.getStateEffByType(sType);
+        let result:number = 0;
+        if (buf) {
+            let bufData:DebufData = gameConfing.instance.getDebufData(sType);
+            let layer = buf.getStateNum();
             if (layer > 0) {
-                let damage:number = layer*bufData.damagePerLayer;
-                this.changeHpFun(-damage);
+                result = layer*bufData.damagePerLayer;
             }
-            poison.dealWithChange(bufData.layerPerRound);
+            if (isDealChange) {
+                buf.dealWithChange(bufData.layerPerRound);
+            }
         }
+        return result;
     }
 
     checkIsCanMove(_round:number){
@@ -179,12 +186,22 @@ export class creature extends Component {
         }
     }
 
-    doAtkFun(_cardType:cardType){
+    doAtkFun(_cardType:cardType,skill:effectObj){
         if (_cardType == cardType.CLOSE_ATK) {
             AudioMgr.inst.playEffect('audio','atk');
         }else if (_cardType == cardType.DISTANCE_ATK) {
             AudioMgr.inst.playEffect('audio','shoot');
         }
+
+        if (_cardType == cardType.CLOSE_ATK || _cardType == cardType.DISTANCE_ATK || _cardType == cardType.EXECUTE) {
+            let atkHealIndex = this.checkBufState(skillType.DAMAGEHEAL,false);
+            if (atkHealIndex>0) {
+                let heal = Math.ceil(skill.effNum*atkHealIndex);
+                console.log('heal =='+heal+" == "+skill.effNum+"*"+atkHealIndex);
+                this.changeHpFun(heal);
+            } 
+        }
+        
     }
 
     effectExecutedBySkill(_skill:effectObj){

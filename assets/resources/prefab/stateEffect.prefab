@@ -486,7 +486,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 31.69189453125,
+      "width": 100,
       "height": 18.9
     },
     "_anchorPoint": {
@@ -522,14 +522,14 @@
       "b": 0,
       "a": 255
     },
-    "_string": "label",
+    "_string": "test",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 15,
-    "_fontSize": 14,
+    "_fontSize": 15,
     "_fontFamily": "Arial",
-    "_lineHeight": 14,
-    "_overflow": 0,
+    "_lineHeight": 15,
+    "_overflow": 3,
     "_enableWrapText": true,
     "_font": null,
     "_isSystemFontUsed": true,

@@ -168,7 +168,7 @@ export class monster extends creature {
     }
 
     monsterAtkFun(type:cardType,_skill:effectObj){
-        super.doAtkFun(type);
+        super.doAtkFun(type,_skill);
         this.fightAnim.play('atkback');
         ListenerManager.dispatch('hitHero',this._monsterID,_skill);
     }
@@ -259,7 +259,7 @@ export class monster extends creature {
         let hStand = this._mianSecene.getHeroStand();
         let endStand = this.stand - move;
         if (typeof hStand == 'number') {
-            if ( endStand > hStand) { //hero移动不能越过最近的敌人
+            if ( endStand > hStand) { //移动不能越过最近的敌人
                 this.stand = endStand
             } else {
                 this.stand = hStand + 1;
@@ -326,7 +326,7 @@ export class monster extends creature {
     }
 
     protected onDestroy(): void {
-        Tween.stopAll();
+        Tween.stopAllByTarget(this.node);
         this.unscheduleAllCallbacks();
     }
 }
