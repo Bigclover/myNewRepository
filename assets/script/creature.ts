@@ -41,6 +41,7 @@ export class creature extends Component {
     protected stand:number =0;
     protected isTangled:boolean = false;
     protected stateEffectArray:stateEffect[]=[];
+    protected iaidoTag:boolean = false;
 
     start() {
         this.hpLabel.string = this.crCurHp.toString();
@@ -70,12 +71,21 @@ export class creature extends Component {
             let leftNum = state.dealWithChange(-damageNum);
             if (leftNum < 0) {
                 this.changeHpFun(leftNum);
+            }else if (leftNum == 0) {
+                this.setIaidoTag();
             }
         } else {
             this.changeHpFun(-damageNum);
         }
 
         this.playBeenHittedAnim();
+    }
+
+    setIaidoTag(){
+        let iaido= this.getStateEffByType(skillType.IAIDO);
+        if (iaido) {
+            this.iaidoTag = true;
+        }
     }
 
     getStateNumByType(type:skillType):number{
@@ -120,6 +130,7 @@ export class creature extends Component {
             sType:eSkill.kType,
             stateNum:eSkill.effNum,
             isEffective:true,
+            turnBase:eSkill.effNum === -1,
             persistTurns:eSkill.turns,
             beginRound:begin,
             descr:eSkill.descr
@@ -131,7 +142,11 @@ export class creature extends Component {
         })
         let _index = typeArr.indexOf(eSkill.kType);
         if (_index !== -1) {
-            this.stateEffectArray[_index].dealWithChange(eSkill.effNum);
+            if (eSkill.effNum === -1) {
+                this.stateEffectArray[_index].dealWithRoundChange(eSkill.turns);
+            } else {
+                this.stateEffectArray[_index].dealWithChange(eSkill.effNum);
+            }
         } else {
             this.addStateEffectTag(_state);  
         }
@@ -195,9 +210,9 @@ export class creature extends Component {
 
         if (_cardType == cardType.CLOSE_ATK || _cardType == cardType.DISTANCE_ATK || _cardType == cardType.EXECUTE) {
             let atkHealIndex = this.checkBufState(skillType.DAMAGEHEAL,false);
-            if (atkHealIndex>0) {
+            if (atkHealIndex>0 && skill.effNum > 0) {
                 let heal = Math.ceil(skill.effNum*atkHealIndex);
-                console.log('heal =='+heal+" == "+skill.effNum+"*"+atkHealIndex);
+                // console.log('heal =='+heal+" == "+skill.effNum+"*"+atkHealIndex);
                 this.changeHpFun(heal);
             } 
         }
@@ -221,7 +236,7 @@ export class creature extends Component {
             let layer = poison.getStateNum();
             if (layer > 0) {
                 let totaldamage:number = layer*perDamage;
-                this.changeHpFun(-totaldamage);
+                this.dealWithDamage(totaldamage);
             }
             this.termianlEffectState(skillType.POISON);
         }

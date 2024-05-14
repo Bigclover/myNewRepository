@@ -20,7 +20,8 @@ export enum skillType {
     TANGLE = 8, //缠结
     POISON = 9,  //毒
     POISONEXECUTE = 10, //毒终结
-    DAMAGEHEAL =11  //吸血状态
+    DAMAGEHEAL =11,  //吸血状态
+    IAIDO = 12
 }
 
 export interface mAndvObj{
@@ -46,6 +47,7 @@ export interface stateObj{
     sType:skillType,
     stateNum:number,
     isEffective:boolean,
+    turnBase:boolean,
     persistTurns:number,
     beginRound:number,
     descr:string
@@ -142,6 +144,9 @@ export class gameConfing {
               break;
           case skillType.DAMAGEHEAL:
               _patch = 'atkHeal';
+              break;
+          case skillType.IAIDO:
+              _patch = 'iaido';
               break;
           default:
               _patch = 'atk';

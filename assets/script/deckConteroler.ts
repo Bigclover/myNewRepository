@@ -104,9 +104,9 @@ export class deckConteroler extends Component {
 
     drawCardsFromAll(drawNum:number){
         return new Promise<void>((resolve)=>{
-            if (this._allCardsArray.length < drawNum) {
-                this.discardPileBacktoAll();
-            }
+            // if (this._allCardsArray.length < drawNum) {
+            //     this.discardPileBacktoAll();
+            // }
             let count:number = 0;
             let interval = 0.5;// 以秒为单位的时间间隔
             let repeat = drawNum-1;// 重复次数
@@ -174,8 +174,7 @@ export class deckConteroler extends Component {
 
     async getTopOneCardToHand(){
         if (this._allCardsArray.length<=0) {
-            console.log ('pile of the cards is empty');
-            return;
+            this.discardPileBacktoAll();
         }
         let topCard:card = this._allCardsArray.pop();
         this.leftNumLabel.string = this._allCardsArray.length.toString();
@@ -236,6 +235,15 @@ export class deckConteroler extends Component {
         this.dpp.active = true;
     }
 
+    usingIaidoCard(){
+        let _iaidoCard:deckObj = deckData.instance.getIaidoCard();
+        let cardIns = instantiate(this.cardPrefab);
+        let cardCom:card = cardIns.getComponent(card);
+        cardCom.init(0,_iaidoCard,null);
+        this._mHero.doHeroAtk(cardCom,_iaidoCard.baseEffect[0]);
+        cardIns.destroy();
+    }
+
     enforceCardBySkill(_card:card,skill:effectObj){
         switch (skill.kType) {
             case skillType.ATTACK:
@@ -273,7 +281,10 @@ export class deckConteroler extends Component {
                 break;
             case skillType.DAMAGEHEAL:
                 this._mHero.addEffectToCreature(skill);
-                break;    
+                break;
+            case skillType.IAIDO:
+                this._mHero.addEffectToCreature(skill);
+                break;   
             default:
                 
                 break;

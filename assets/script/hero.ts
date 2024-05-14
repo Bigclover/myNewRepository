@@ -15,7 +15,7 @@ export class hero extends creature {
 
     private _mianSecene:mainSecene = null;
     public drawCardsAbility:number = 3;//hero单次抽牌数量
-    public remainCardsAbility:number = 2;//hero留牌数量
+    public remainCardsAbility:number = 3;//hero留牌数量
     
     private _myDeckCont:deckConteroler = null;
     private _heroRounds:number = 0;
@@ -50,8 +50,16 @@ export class hero extends creature {
             stateAtk.checkEffectState(this._heroRounds);
             this._myDeckCont.adjustAllCardsByHero(cardType.CLOSE_ATK,skillType.ATTACK,0);
         }
+        this.checkIaido(round);
 
         this.heroDrawCards();
+    }
+
+    checkIaido(_round:number){
+        let iaido= this.getStateEffByType(skillType.IAIDO);
+        if (iaido) {
+            iaido.checkEffectState(_round);
+        }
     }
 
     async heroDrawCards(){
@@ -154,6 +162,7 @@ export class hero extends creature {
             let dis = this.getDistanceFormMonster(mID);
             if (_skill.range >= dis) {
                 this.dealWithDamage(_skill.effNum);
+                this.checkIaidoState();
             } else {
                 //攻击范围外 处理未击中效果
                 this.missAnim();
@@ -161,6 +170,14 @@ export class hero extends creature {
         }else{
             this.setEffect(_skill,true);
         } 
+    }
+
+    checkIaidoState(){
+        if (this.iaidoTag) {
+            this.iaidoTag = false;
+            this.getStateEffByType(skillType.IAIDO).cancelStateEffect();
+            this._myDeckCont.usingIaidoCard();
+        }
     }
 
     setEffect(skill:effectObj,formMonster:boolean = false){

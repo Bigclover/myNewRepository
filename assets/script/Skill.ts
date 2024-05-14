@@ -45,7 +45,9 @@ export class Skill extends Component {
         let numStr:string =''
         if (this.skill.effNum >= 0) {
             numStr = this.skill.effNum.toString();
-        } else {
+        }else if (this.skill.effNum === -1) {
+            numStr = this.skill.turns.toString();
+        }else {
             numStr = ':'+this.skill.effNum.toString();
         }
         if (this._isShowRange && this.skill.kType == skillType.ATTACK) {

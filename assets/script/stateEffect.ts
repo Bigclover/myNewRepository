@@ -20,6 +20,7 @@ export class stateEffect extends Component {
     private stateType:skillType;
     private stateNum:number = 0;
     private isEffective:boolean = false;
+    private turnBase:boolean = false;
     private persistTurns:number = 0;
     private beginRound:number = 0;
     private creature:creature = null;
@@ -30,6 +31,7 @@ export class stateEffect extends Component {
         this.stateType = stateData.sType;
         this.stateNum = stateData.stateNum;
         this.isEffective = stateData.isEffective;
+        this.turnBase = stateData.turnBase;
         this.persistTurns = stateData.persistTurns;
         this.beginRound = stateData.beginRound;
         this.descr = stateData.descr;
@@ -63,18 +65,11 @@ export class stateEffect extends Component {
         if (passRound >= this.persistTurns) {
             this.cancelStateEffect();
         }else{
-            if (this.getStateType() == skillType.STUN 
-                ||this.getStateType() == skillType.TANGLE) {
-                this.turnsTypeCheckRound(passRound);
+            if (this.turnBase) {
+                this.dealWithRoundChange(-passRound);
             }
         }
         return this.isEffective;
-    }
-
-    turnsTypeCheckRound(pass:number){
-        this.stateNum = this.persistTurns - pass;
-        // console.log('this.stateNum=',this.stateNum)
-        this.setNumLabel();
     }
 
     dealWithChange(_change:number):number{
@@ -87,6 +82,16 @@ export class stateEffect extends Component {
         return this.stateNum;
     }
 
+    dealWithRoundChange(_change:number):number{
+        this.persistTurns += _change;
+        if (this.persistTurns <= 0) {
+            this.cancelStateEffect();
+        } else {
+            this.setNumLabel();
+        }
+        return this.persistTurns;
+    }
+
     getStateNum():number{
         return this.stateNum;
     }
@@ -96,7 +101,13 @@ export class stateEffect extends Component {
     }
 
     setNumLabel(){
-        this.numLabel.string = this.stateNum.toString();
+        let _num:number = 0;
+        if (this.turnBase) {
+            _num = this.persistTurns;
+        } else {
+            _num = this.stateNum;
+        }
+        this.numLabel.string = _num.toString();
     }
 
     // updateStateNum(num:number){
