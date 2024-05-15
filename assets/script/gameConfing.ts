@@ -194,5 +194,21 @@ export class gameConfing {
 		}
 		return obj2;
 	  }
+
+
+    guakaFun(){
+        // const maskNode = this.mask.node;
+        // const graphics = this.mask.subComp as Graphics;
+
+        // graphics.fill();
+
+        // maskNode.on(Node.EventType.TOUCH_MOVE, (event: EventTouch) => {
+        //     const tranComp = maskNode.getComponent(UITransform);
+        //     const uiLocation = event.getUILocation();
+        //     const pos = tranComp.convertToNodeSpaceAR(v3(uiLocation.x, uiLocation.y, 0));
+        //     graphics.circle(pos.x, pos.y, 50);
+        //     graphics.fill();
+        // }, this);
+    }
 }
 

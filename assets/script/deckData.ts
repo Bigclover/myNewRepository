@@ -16,8 +16,7 @@ export default class deckData{
 
     private iaidoCard:deckObj = {cardType:cardType.CLOSE_ATK,cardName:'居合斩',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.ATTACK,initNum:40,effNum:40,range:20,turns:0,descr:''}],descr:''}
 
-    private _curDeckData:deckObj[]=
-    [
+    private _curDeckData:deckObj[]=[
     {cardType:cardType.CLOSE_ATK,cardName:'剑击',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.ATTACK,initNum:10,effNum:10,range:1,turns:0,descr:''}],descr:''},
     {cardType:cardType.CLOSE_ATK,cardName:'剑击',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.ATTACK,initNum:10,effNum:10,range:1,turns:0,descr:''}],descr:''},
     {cardType:cardType.CLOSE_ATK,cardName:'剑挡',isOneoff:false,isStable:false,consumption:0,baseEffect:[{kType:skillType.ATTACK,initNum:5,effNum:5,range:1,turns:0,descr:''},{kType:skillType.DEFEND,initNum:5,effNum:5,range:0,turns:0,descr:''}],descr:''},

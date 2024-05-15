@@ -175,8 +175,15 @@ export class hero extends creature {
     checkIaidoState(){
         if (this.iaidoTag) {
             this.iaidoTag = false;
-            this.getStateEffByType(skillType.IAIDO).cancelStateEffect();
+            let iaido = this.getStateEffByType(skillType.IAIDO);
+            if (iaido) {
+                iaido.cancelStateEffect();
+            }
             this._myDeckCont.usingIaidoCard();
+            this._mianSecene.useSlowMontion(true);
+            this.scheduleOnce(()=>{
+                this._mianSecene.useSlowMontion(false);
+            },0.8)
         }
     }
 

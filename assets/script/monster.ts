@@ -93,16 +93,25 @@ export class monster extends creature {
 
     distanceNumAnim(curNum:number){
         var obj = {num:this._previousDistance};
-        // this.distanceLabel.string = obj.num.toString();
-        let self = this;
         let _time = this.getTimeByChange(curNum);
+        // tween(obj)
+        // .to(_time,{num:curNum},{progress(start, end, current, ratio){
+        //     if (self.distanceLabel) {
+        //         self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
+        //     }
+        //     return  start+ (end - start)*ratio;
+        // }})
+        // .start();
+
         tween(obj)
-        .to(_time,{num:curNum},{progress(start, end, current, ratio){
-            if (self.distanceLabel) {
-                self.distanceLabel.string = Math.ceil(start+ (end - start)*ratio).toString();
+        .to(_time, { num:curNum }, {
+            easing: 'sineOut',// 先快后慢
+            onUpdate: (target: { num: number }, ratio: number) => {
+                if (this.distanceLabel) {
+                    this.distanceLabel.string = Math.ceil(target.num).toString();
+                }
             }
-            return  start+ (end - start)*ratio;
-        }})
+        })
         .start();
     }
 

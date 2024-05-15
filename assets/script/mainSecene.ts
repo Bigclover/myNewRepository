@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween, Vec3,  } from 'cc';
+import { _decorator, Component, director, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween, Vec3,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
 import { mAndvObj, skillType } from './gameConfing';
@@ -31,6 +31,8 @@ export class mainSecene extends Component {
     private _curSelectMonster:number = 0;
     private _monPositionArr:Vec3[]=[];
     
+    private oldTick = director.tick;// 缓存 director 的 tick 方法
+
     protected onLoad(): void {
         this._monsterJson = this.monsterConfig.json;
     }
@@ -42,7 +44,16 @@ export class mainSecene extends Component {
         this.scheduleOnce(()=>{
             this.getClosestMonsterSelected();
             this.heroRoundStart();
-        },0.5)
+        },0.5) 
+    }
+
+    useSlowMontion(isSlow:boolean){
+        director.tick = (dt: number) => {
+            this.oldTick.call(director, dt * (isSlow ? 0.30 : 1));
+        }
+        if (!isSlow) {
+            director.tick = this.oldTick;
+        }
     }
 
     getMonsterRound():number{
