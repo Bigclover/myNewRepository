@@ -13,7 +13,7 @@ export class hero extends creature {
     @property({type:Prefab})
     deckContrPre:Prefab = null;
 
-    private _mianSecene:mainSecene = null;
+    private _mainScene:mainSecene = null;
     public drawCardsAbility:number = 3;//hero单次抽牌数量
     public remainCardsAbility:number = 3;//hero留牌数量
     
@@ -29,7 +29,7 @@ export class hero extends creature {
     }
 
     init(main:mainSecene){
-        this._mianSecene = main;
+        this._mainScene = main;
         this.crMaxHp=50;
         this.crCurHp = this.crMaxHp;
     }
@@ -79,22 +79,22 @@ export class hero extends creature {
 
     heroEndTurn(){
         //结束出牌 通知主战斗场景 进入monster turn
-        this._mianSecene.monsterRoundStart();
+        this._mainScene.monsterRoundStart();
     }
 
     doHeroMove(move:number){
         super.moveFun();
-        let mId = this._mianSecene.getClosestMonster();
-        let mStand = this._mianSecene.getMonsterStand(mId);
+        let mId = this._mainScene.getClosestMonster();
+        let mStand = this._mainScene.getMonsterStand(mId);
         let endStand = this.stand + move;
-        if (typeof mStand == 'number') {
+        if (typeof mStand === 'number') {
             if ( endStand < mStand) { //hero移动不能越过最近的敌人
                 this.stand = endStand
             } else {
                 this.stand = mStand-1;
             }
         }
-        this._mianSecene.heroMoveFinish();
+        this._mainScene.heroMoveFinish();
     }
 
     updatePoisonCardNum(layer:number){
@@ -127,14 +127,14 @@ export class hero extends creature {
     }
 
     addEffectToMonster(skill:effectObj){
-        let monsterId:number = this._mianSecene.getSelectedMonster();
+        let monsterId:number = this._mainScene.getSelectedMonster();
         ListenerManager.dispatch('hitMonster',monsterId,skill);
     }
 
     doHeroAtk(_card:card,skill:effectObj){
         super.doAtkFun(_card.getCardType(),skill);
         this.fightAnim.play('atk');
-        let monsterId:number = this._mianSecene.getSelectedMonster();
+        let monsterId:number = this._mainScene.getSelectedMonster();
         ListenerManager.dispatch('hitMonster',monsterId,skill);
 
         if (_card.getCardType() == cardType.DISTANCE_ATK) {
@@ -180,9 +180,9 @@ export class hero extends creature {
                 iaido.cancelStateEffect();
             }
             this._myDeckCont.usingIaidoCard();
-            this._mianSecene.useSlowMontion(true);
+            this._mainScene.useSlowMontion(true);
             this.scheduleOnce(()=>{
-                this._mianSecene.useSlowMontion(false);
+                this._mainScene.useSlowMontion(false);
             },0.8)
         }
     }
@@ -198,7 +198,7 @@ export class hero extends creature {
     }
 
     getDistanceFormMonster(mid:number):number{
-        let monsterStand = this._mianSecene.getMonsterStand(mid);
+        let monsterStand = this._mainScene.getMonsterStand(mid);
         let distance:number = Math.abs(this.stand - monsterStand);
         return distance;
     }
@@ -206,7 +206,7 @@ export class hero extends creature {
     update(deltaTime: number) {
         super.update(deltaTime);
         if (!this._hpIsChanging && this._hpChangeArr.length <= 0 && this.crCurHp <=0) {
-            this._mianSecene.whenHeroDie();
+            this._mainScene.whenHeroDie();
         }
     }
 }

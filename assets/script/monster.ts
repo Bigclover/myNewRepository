@@ -267,7 +267,7 @@ export class monster extends creature {
         super.moveFun();
         let hStand = this._mianSecene.getHeroStand();
         let endStand = this.stand - move;
-        if (typeof hStand == 'number') {
+        if (typeof hStand === 'number') {
             if ( endStand > hStand) { //移动不能越过最近的敌人
                 this.stand = endStand
             } else {
