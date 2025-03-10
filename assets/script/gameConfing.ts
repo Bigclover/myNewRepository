@@ -195,6 +195,31 @@ export class gameConfing {
 		return obj2;
 	  }
 
+    removeItemFormArray<T>(item: T, arr: T[], allowAll: boolean = false): void {
+      if (!arr || arr.length === 0) return;
+    
+      if (allowAll) {
+        // 删除所有匹配项（倒序遍历避免索引错位）‌:ml-citation{ref="1,2" data="citationList"}
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (Object.is(arr[i], item)) {
+            arr.splice(i, 1);
+          }
+        }
+      } else {
+        // 仅删除第一个匹配项（支持 NaN 的严格匹配）‌:ml-citation{ref="1,4" data="citationList"}
+        const index = arr.findIndex(v => Object.is(v, item));
+        if (index > -1) {
+          arr.splice(index, 1);
+        }
+      }
+    }
+    // removeItemFormArray<T>(item:T,arr:T[]){
+    //     let index = arr.indexOf(item);
+    //     if (index > -1) {
+    //         arr.splice(index,1);
+    //     }
+    // }
+
 
     guakaFun(){
         // const maskNode = this.mask.node;

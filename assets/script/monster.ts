@@ -42,9 +42,14 @@ export class monster extends creature {
     // private _longTapTime: number = 300;
     private _useSkill:effectObj=null;
 
+    
     protected onEnable(): void {
         ListenerManager.on('hitMonster',this.monsterBeenHit,this);
 
+        //暂停和恢复node节点的系统事件，参数为true时影响node所有子节点
+        // this.node.pauseSystemEvents(false);
+        // this.node.resumeSystemEvents(false);
+        
         this.touchNode.on(Node.EventType.TOUCH_START, this.onTouchBegin, this);
         this.touchNode.on(Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.touchNode.on(Node.EventType.TOUCH_CANCEL, this.onTouchEnd, this);
@@ -113,6 +118,7 @@ export class monster extends creature {
             }
         })
         .start();
+        
     }
 
     getTimeByChange(curNum:number):number{

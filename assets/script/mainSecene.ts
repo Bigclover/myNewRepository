@@ -1,7 +1,7 @@
-import { _decorator, Component, director, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween, Vec3,  } from 'cc';
+import { _decorator, Component, director, find, instantiate, JsonAsset, Label, Layout, Node, Prefab, Slider, sp, Sprite, tween, Vec3,  } from 'cc';
 import { monster } from './monster';
 import { hero } from './hero';
-import { mAndvObj, skillType } from './gameConfing';
+import { gameConfing, mAndvObj, skillType } from './gameConfing';
 
 // import AssetsManger from '../assetsManager/AssetsManger';
 const { ccclass, property } = _decorator;
@@ -32,6 +32,15 @@ export class mainSecene extends Component {
     private _monPositionArr:Vec3[]=[];
     
     private oldTick = director.tick;// 缓存 director 的 tick 方法
+
+    //为属性设置get/set方法
+    // get width() {
+    //     return this._width;
+    // }
+    
+    // set width(value) {
+    //     this._width = value;
+    // }
 
     protected onLoad(): void {
         this._monsterJson = this.monsterConfig.json;
@@ -174,7 +183,7 @@ export class mainSecene extends Component {
     }
 
     whenMonsterDie(_mon:monster){
-        this.removeItemFormArray<monster>(_mon,this._monstersArray);
+        gameConfing.instance.removeItemFormArray<monster>(_mon,this._monstersArray);
         _mon.node.destroy();
         if (this._monstersArray.length > 0) {
             let mID = this._monstersArray[0].getMonsterID();
@@ -268,23 +277,6 @@ export class mainSecene extends Component {
         
     }
 
-    removeItemFormArray<T>(item:T,arr:T[]){
-        let index = arr.indexOf(item);
-        if (index > -1) {
-            arr.splice(index,1);
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -309,6 +301,7 @@ export class mainSecene extends Component {
     }
 
     fun1(){
+
         //字符串中加入变量or方法
         let cid = 0;
         let res = `res/images/arrow${cid}`;
@@ -356,6 +349,8 @@ export class mainSecene extends Component {
         //在一个文件或模块中export、import 可以有多个，export default 仅有一个
         //通过 export 方式导出，在导入时要加{ }，export default 则不需要
         //export default 向外暴露的成员，可以使用任意变量来接收
+
+        
     }
 
     // async setSkeletonByData(aniSke:sp.Skeleton){
@@ -401,11 +396,19 @@ export class mainSecene extends Component {
     baseinfo(){
         // 2Dnode属性修改test
         // this.squareNode.active = false;//隐藏节点
+
         // this.squareNode.setPosition(100,50,0);
+        // this.node.setPosition(new Vec3(100, 50, 100));
+        // this.node.position = new Vec3(100, 50, 100);
+
+        // this.node.setRotation(0, 0, 45,1)
         // this.squareNode.setRotationFromEuler(new Vec3(0,0,45));
+
+        // this.node.setScale(2, 2, 1);
         // this.squareNode.setScale(new Vec3(2,1,1));
         // this.squareNode.layer = Layers.Enum.UI_2D;
         // this.squareNode.setSiblingIndex(1);//zIndex
+
         // this.squareNode.getComponent(UITransform).setAnchorPoint(0.5,0.5)
         // this.squareNode.getComponent(UITransform).setContentSize(new Size(80,40));
         // this.squareNode.getComponent(Sprite).color = color(255,255,255,100);
@@ -433,6 +436,51 @@ export class mainSecene extends Component {
         //     console.log('my tween done...')
         // })
         // .start()
+
+        // tween(this.diceNode)
+        // .delay(1.0)
+        // .parallel(
+        //     tween().to(1, { position: new Vec3(100, 100, 0) }),
+        //     tween(this.diceNode.getComponent(UITransform) as UITransform).to(1, { contentSize: size(80, 80) }),
+        //     tween(this.diceNode.getComponent(Sprite) as Sprite).to(1, { color: color(100, 100, 100, 100) }),
+        // )
+        // .start();
+
+        // tween(this.diceNode)
+        // .delay(1.0)
+        // //设置目标属性
+        // .set({ position: new Vec3(0, 100, 0) })
+        // .start();
+
+        // tween(this.diceNode)
+        // .delay(1.0)      
+        // .hide()        
+        // .delay(1.0)
+        // .show()
+        // .delay(1.0)
+        // .removeSelf()//删除节点的动作
+        // .call(()=>{
+        //    console.log("dice valid ="+this.diceNode.isValid) 
+        // })
+        // .start();
+
+        //reverse
+        // tween(this.diceNode)
+        // .by(1, { scale: new Vec3(2, 2, 0) }).id(22)
+        // .by(1, { position: new Vec3(200, 0, 0) }).id(123) // 将 by 动作标识为 123
+        // .delay(1)                                         // 延时一秒
+        // .reverse(123) 
+        // .reverse(22)                                    // 翻转标识为 123 的动作，即前面的 by 动作
+        // .union()                                       // 从标识为 123 的动作开始合并
+        // .repeat(3)                                        // 将前面 union 打包后的动作重复执行 3 次
+        // .start();
+
+        //从 v3.8.4 开始，如果缓动目标是 Node 类型，那么缓动会根据 Node 的 active 状态自动暂停恢复。
+        // myTween.pause();
+        // myTween.resume();
+
+        //get tween total time
+        // myTween.duration;
 
         //Tween stop
         // myTween.stop();
@@ -477,10 +525,11 @@ export class mainSecene extends Component {
         // });
 
         //加载Scene
+        // director.preloadScene()//预加载场景
         // director.loadScene("MyScene",()=>{
         //     //场景加载后的回调
         // });
-        //director.preloadScene()//预加载场景
+        
         // bundle.loadScene('MyScene', function (err, scene) {
         //     director.runScene(scene);
         // });

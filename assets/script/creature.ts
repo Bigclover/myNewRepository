@@ -268,7 +268,7 @@ export class creature extends Component {
     }
 
     removeStateFromStateEffectArray(_state:stateEffect){
-        this.removeItemFormArray<stateEffect>(_state,this.stateEffectArray);
+        gameConfing.instance.removeItemFormArray<stateEffect>(_state,this.stateEffectArray);
     }
     
     changeHpFun(changeNum:number):void{
@@ -317,11 +317,5 @@ export class creature extends Component {
         .start()
     }
 
-    removeItemFormArray<T>(item:T,arr:T[]){
-        let index = arr.indexOf(item);
-        if (index > -1) {
-            arr.splice(index,1);
-        }
-    }
 }
 
